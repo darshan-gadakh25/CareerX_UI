@@ -31,10 +31,11 @@ export const NavBar = () => {
             Contact Us
           </Link>
 
-          <Link
-            to="/login"
+          <Link 
+            to="/register" 
             className="bg-[#2F4156] text-white px-5 py-2 rounded-lg hover:bg-[#567C8D] transition"
           >
+           
             Sign Up
           </Link>
         </div>
