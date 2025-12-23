@@ -1,13 +1,14 @@
-
-
+import { NavBar } from "./components/NavBar.jsx";
+import {HomePage} from "./components/HomePage.jsx";
+import { Footer } from "./components/Footer.jsx";
 function App() {
-
   return (
     <>
-      <h3> Hello World</h3>  
-      <h2>nmdnfjng</h2>
+      <NavBar />
+      <HomePage />
+      <Footer />
     </>
-  )
+  );
 }
 
-export default App
+export default App;
