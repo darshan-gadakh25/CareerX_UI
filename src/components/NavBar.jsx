@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 
 export const NavBar = () => {
+   const [isOpen, setIsOpen] = useState(false);
   return (
     <nav className="bg-[#C8D9E6] border-b border-[#C8D9E6]">
       <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
@@ -39,8 +41,32 @@ export const NavBar = () => {
             Sign Up
           </Link>
         </div>
-
+          <button
+          className="md:hidden text-black text-3xl"
+          onClick={() => setIsOpen(!isOpen)}
+        >
+          ☰
+        </button>
       </div>
+      {isOpen && (
+        <div className="md:hidden bg-[#C8D9E6] px-6 pb-4 space-y-4">
+          <Link to="/" className="block text-black text-lg">
+            Home
+          </Link>
+          <Link to="/about" className="block text-black text-lg">
+            About Us
+          </Link>
+          <Link to="/contact" className="block text-black text-lg">
+            Contact Us
+          </Link>
+          <Link
+            to="/login"
+            className="block bg-black text-white px-4 py-2 rounded-lg text-center"
+          >
+            Sign Up
+          </Link>
+        </div>
+      )}
     </nav>
   );
 };
