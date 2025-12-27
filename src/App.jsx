@@ -5,6 +5,9 @@ import LoginPage from "./components/Auth/Login.jsx";
 import Register from "./components/Auth/Register.jsx";
 import { Footer } from "./components/Footer.jsx";
 import { HomePage } from "./components/HomePage.jsx";
+import { BrowserRouter } from "react-router-dom";
+import { About } from "./components/About.jsx";
+
 import { NavBar } from "./components/NavBar.jsx";
 
 function App() {
@@ -13,6 +16,7 @@ function App() {
       <NavBar />
       <Routes>
         <Route path="/" element={<HomePage />} />
+        <Route path="/about" element={<About />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />

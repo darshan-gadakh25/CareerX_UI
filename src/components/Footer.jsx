@@ -2,11 +2,16 @@ import { Link } from "react-router-dom";
 
 export const Footer = () => {
   return (
-    <footer className="bg-[#C8D9E6] border-t border-[#C8D9E6] mt-13 ">
+    <footer className="bg-[#C8D9E6] w-full mt-10">
+      {/* Top footer content (constrained) */}
       <div className="max-w-7xl mx-auto px-4 py-10">
         <div className="grid gap-8 md:grid-cols-3">
           <div>
-            <img src="/src/assets/logo.png" alt="logo" className="w-30 h-7" />
+            <img
+              src="/src/assets/logo.png"
+              alt="logo"
+              className="w-32 h-7 mb-2"
+            />
             <p className="text-[#2F4156] text-sm">
               A one-stop personalized career and education guidance platform to
               help students make informed academic and career choices.
@@ -59,10 +64,11 @@ export const Footer = () => {
             </p>
           </div>
         </div>
+      </div>
 
-        <div className="mt-10 border-t border-[#C8D9E6] pt-4 text-center text-sm text-[#2F4156]">
-          © {new Date().getFullYear()} CareerGuide. All rights reserved.
-        </div>
+      {/* FULL-WIDTH COPYRIGHT BAR */}
+      <div className="bg-white w-full py-3 text-center text-sm text-[#2F4156]">
+        © {new Date().getFullYear()} CareerX. All rights reserved.
       </div>
     </footer>
   );
