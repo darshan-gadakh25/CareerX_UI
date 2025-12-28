@@ -2,6 +2,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import Img from "../../assets/login-img.png";
+import { StudentDashboard } from "../StudentDashboard";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -27,40 +28,57 @@ export default function LoginPage() {
       return;
     }
 
-    try {
-      setLoading(true);
+  //   try {
+  //     setLoading(true);
 
-      const response = await fetch("#", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email,
-          password,
-          rememberMe,  
-        }),
-      });
+  //     const response = await fetch("#", {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({
+  //         email,
+  //         password,
+  //         rememberMe,
+  //       }),
+  //     });
 
-      const data = await response.json();
+  //     const data = await response.json();
 
-      if (!response.ok) {
-        throw new Error(data.message || "Login failed");
-      }
+  //     if (!response.ok) {
+  //       throw new Error(data.message || "Login failed");
+  //     }
 
-      toast.success("Login successful");
-      setTimeout(() => navigate("/dashboard"), 1200);
+  //     toast.success("Login successful");
+  //     setTimeout(() => navigate("/StudentDashboard"), 1200);
+  //   } catch (error) {
+  //     toast.error(error.message);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
-    } catch (error) {
-      toast.error(error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+  setLoading(true);
+
+  // ✅ DUMMY LOGIN CHECK
+  if (email === "student@careerx.com" && password === "careerx123") {
+    toast.success("Login successful");
+    setTimeout(() => navigate("/sdashboard"), 1200);
+    return;
+  }
+
+  // ❌ Invalid dummy credentials
+  throw new Error("Invalid email or password");
+
+} catch (error) {
+  toast.error(error.message);
+} finally {
+  setLoading(false);
+}
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#F5EFE8] px-4">
       <div className="w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden md:flex">
-
-       
         <div className="hidden md:block md:w-1/2 bg-[#C8D9E6]">
           <img
             src={Img}
@@ -69,21 +87,15 @@ export default function LoginPage() {
           />
         </div>
 
-      
         <div className="w-full md:w-1/2 p-10 flex flex-col justify-center">
-
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-semibold text-[#2F4156]">
-              CareerX
-            </h2>
+            <h2 className="text-3xl font-semibold text-[#2F4156]">CareerX</h2>
             <p className="text-sm text-[#567C8D] mt-2">
               Login using your registered Email ID
             </p>
           </div>
 
           <form onSubmit={handleLogin} className="space-y-5">
-
-           
             <div>
               <label className="block text-sm font-medium text-[#2F4156] mb-1">
                 Email
@@ -98,7 +110,6 @@ export default function LoginPage() {
               />
             </div>
 
-           
             <div>
               <label className="block text-sm font-medium text-[#2F4156] mb-1">
                 Password
@@ -113,7 +124,6 @@ export default function LoginPage() {
               />
             </div>
 
-           
             <div className="flex items-center justify-between text-sm">
               <label className="flex items-center gap-2 text-[#567C8D] cursor-pointer">
                 <input
@@ -126,15 +136,13 @@ export default function LoginPage() {
               </label>
 
               <span
-  onClick={() => navigate("/forgot-password")}
-  className="text-[#2F4156] cursor-pointer hover:underline"
->
-  Forgot password?
-</span>
-
+                onClick={() => navigate("/forgot-password")}
+                className="text-[#2F4156] cursor-pointer hover:underline"
+              >
+                Forgot password?
+              </span>
             </div>
 
-            
             <button
               type="submit"
               disabled={loading}
@@ -148,13 +156,15 @@ export default function LoginPage() {
 
           <p className="text-center text-sm text-[#567C8D] mt-6">
             Don’t have an account?{" "}
-            <span   onClick={() => navigate("/register")} className="font-medium text-[#2F4156] cursor-pointer hover:underline">
+            <span
+              onClick={() => navigate("/register")}
+              className="font-medium text-[#2F4156] cursor-pointer hover:underline"
+            >
               Sign up
             </span>
           </p>
-
         </div>
       </div>
     </div>
   );
-}
+};
