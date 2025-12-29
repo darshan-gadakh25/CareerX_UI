@@ -2,14 +2,13 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { authAPI } from "../../services/api";
-import Img from "../../assets/login-img.png";
+import Img from "../../assets/loginimg.png";
 
 export default function Register() {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
+    FullName: "",
     email: "",
     age: "",
     location: "",
@@ -30,8 +29,7 @@ export default function Register() {
     e.preventDefault();
 
     const {
-      firstName,
-      lastName,
+      fullName,
       email,
       age,
       location,
@@ -39,7 +37,7 @@ export default function Register() {
       confirmPassword,
     } = formData;
 
-    if (!firstName || !lastName) {
+    if (!fullName) {
       toast.error("Please enter your full name");
       return;
     }
@@ -73,7 +71,7 @@ export default function Register() {
       setLoading(true);
 
       const userData = {
-        name: `${firstName} ${lastName}`,
+        name: `${fullName}`,
         email,
         password,
         age: parseInt(age),
@@ -93,26 +91,26 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#F5EFE8] px-4">
-      <div className="w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden md:flex">
+    <div className="min-h-screen flex items-center justify-center  px-4">
+      <div className=" w-[1300px] h-[600px] bg-white rounded-2xl shadow-[0_0_35px_rgba(0,0,0,0.25)] overflow-hidden md:flex">
+<div
+  className="hidden md:block md:w-1/2 bg-cover bg-center"
+  style={{ backgroundImage: `url(${Img})` }}
+>
+</div>
 
-        
-        <div className="hidden md:block md:w-1/2 bg-[#C8D9E6]">
-          <img
-            src={Img}
-            alt="CareerX Register"
-            className="h-full w-full object-cover"
-          />
-        </div>
+
+
+
 
         
         <div className="w-full md:w-1/2 p-10 flex flex-col justify-center">
 
           
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-semibold text-[#2F4156]">
+            <h1 className="text-5xl font-semibold text-[#2F4156]">
               CareerX
-            </h2>
+            </h1>
             <p className="text-sm text-[#567C8D] mt-2">
               Create your CareerX account
             </p>
@@ -123,19 +121,13 @@ export default function Register() {
            
             <div className="flex gap-3">
               <input
-                name="firstName"
-                placeholder="First Name"
+                name="fullName"
+                placeholder="Full Name"
                 onChange={handleChange}
-                className="w-1/2 rounded-lg border border-[#C8D9E6] bg-[#F5EFE8]
+                className="w-full rounded-lg border border-[#C8D9E6] 
                 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#567C8D]"
               />
-              <input
-                name="lastName"
-                placeholder="Last Name"
-                onChange={handleChange}
-                className="w-1/2 rounded-lg border border-[#C8D9E6] bg-[#F5EFE8]
-                px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#567C8D]"
-              />
+              
             </div>
 
             
@@ -144,7 +136,7 @@ export default function Register() {
               type="email"
               placeholder="Email"
               onChange={handleChange}
-              className="w-full rounded-lg border border-[#C8D9E6] bg-[#F5EFE8]
+              className="w-full rounded-lg border border-[#C8D9E6]
               px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#567C8D]"
             />
 
@@ -173,7 +165,7 @@ export default function Register() {
               type="password"
               placeholder="Password"
               onChange={handleChange}
-              className="w-full rounded-lg border border-[#C8D9E6] bg-[#F5EFE8]
+              className="w-full rounded-lg border border-[#C8D9E6] 
               px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#567C8D]"
             />
 
@@ -183,7 +175,7 @@ export default function Register() {
               type="password"
               placeholder="Confirm Password"
               onChange={handleChange}
-              className="w-full rounded-lg border border-[#C8D9E6] bg-[#F5EFE8]
+              className="w-full rounded-lg border border-[#C8D9E6] 
               px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#567C8D]"
             />
 
