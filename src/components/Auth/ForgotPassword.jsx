@@ -46,7 +46,7 @@ export default function ForgotPassword() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#F5EFE8] px-4">
+    <div className="min-h-screen flex items-center justify-center  px-4">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8">
 
        
@@ -70,7 +70,7 @@ export default function ForgotPassword() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="student@email.com"
-              className="w-full rounded-lg border border-[#C8D9E6] bg-[#F5EFE8]
+              className="w-full rounded-lg border border-[#C8D9E6] 
               px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#567C8D]"
             />
           </div>
