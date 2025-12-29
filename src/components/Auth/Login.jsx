@@ -1,8 +1,12 @@
 import { useState } from "react";
-import toast from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+<<<<<<< Updated upstream
 import Img from "../../assets/login-img.png";
 import { StudentDashboard } from "../StudentDashboard";
+=======
+import Img from "../../assets/loginimg.png";
+>>>>>>> Stashed changes
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -31,6 +35,7 @@ export default function LoginPage() {
   //   try {
   //     setLoading(true);
 
+<<<<<<< Updated upstream
   //     const response = await fetch("#", {
   //       method: "POST",
   //       headers: { "Content-Type": "application/json" },
@@ -40,6 +45,14 @@ export default function LoginPage() {
   //         rememberMe,
   //       }),
   //     });
+=======
+   
+      const response = await fetch("#", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+>>>>>>> Stashed changes
 
   //     const data = await response.json();
 
@@ -47,6 +60,7 @@ export default function LoginPage() {
   //       throw new Error(data.message || "Login failed");
   //     }
 
+<<<<<<< Updated upstream
   //     toast.success("Login successful");
   //     setTimeout(() => navigate("/StudentDashboard"), 1200);
   //   } catch (error) {
@@ -55,6 +69,18 @@ export default function LoginPage() {
   //     setLoading(false);
   //   }
   // };
+=======
+      
+      if (data.role === "admin") {
+        toast.success("Admin login successful");
+        navigate("/admin/dashboard");
+      } else if (data.role === "student") {
+        toast.success("Student login successful");
+        navigate("/student/dashboard");
+      } else {
+        toast.error("Unknown role");
+      }
+>>>>>>> Stashed changes
 
   try {
   setLoading(true);
@@ -77,6 +103,7 @@ export default function LoginPage() {
   }
 
   return (
+<<<<<<< Updated upstream
     <div className="min-h-screen flex items-center justify-center bg-[#F5EFE8] px-4">
       <div className="w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden md:flex">
         <div className="hidden md:block md:w-1/2 bg-[#C8D9E6]">
@@ -90,6 +117,22 @@ export default function LoginPage() {
         <div className="w-full md:w-1/2 p-10 flex flex-col justify-center">
           <div className="text-center mb-8">
             <h2 className="text-3xl font-semibold text-[#2F4156]">CareerX</h2>
+=======
+    <div className="min-h-screen flex items-center justify-center px-4">
+      <Toaster position="top-center" />
+      <div className="w-[1300px] h-[600px] bg-white rounded-2xl shadow-[0_0_35px_rgba(0,0,0,0.25)] overflow-hidden md:flex">
+        
+      
+        <div
+          className="hidden md:block md:w-1/2 bg-cover bg-center"
+          style={{ backgroundImage: `url(${Img})` }}
+        />
+
+     
+        <div className="w-full md:w-1/2 p-10 flex flex-col justify-center">
+          <div className="text-center mb-8">
+            <h1 className="text-5xl font-semibold text-[#2F4156]">CareerX</h1>
+>>>>>>> Stashed changes
             <p className="text-sm text-[#567C8D] mt-2">
               Login using your registered Email ID
             </p>
@@ -97,30 +140,24 @@ export default function LoginPage() {
 
           <form onSubmit={handleLogin} className="space-y-5">
             <div>
-              <label className="block text-sm font-medium text-[#2F4156] mb-1">
-                Email
-              </label>
+              <label className="block text-sm font-medium text-[#2F4156] mb-1">Email</label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="student@email.com"
-                className="w-full rounded-lg border border-[#C8D9E6] bg-[#F5EFE8]
-                px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#567C8D]"
+                className="w-full rounded-lg border border-[#C8D9E6] px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#567C8D]"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-[#2F4156] mb-1">
-                Password
-              </label>
+              <label className="block text-sm font-medium text-[#2F4156] mb-1">Password</label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full rounded-lg border border-[#C8D9E6] bg-[#F5EFE8]
-                px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#567C8D]"
+                className="w-full rounded-lg border border-[#C8D9E6] px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#567C8D]"
               />
             </div>
 
@@ -146,9 +183,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-lg bg-[#2F4156] py-2.5
-              text-white font-medium hover:bg-[#567C8D]
-              transition duration-200 disabled:opacity-60"
+              className="w-full rounded-lg bg-[#2F4156] py-2.5 text-white font-medium hover:bg-[#567C8D] transition duration-200 disabled:opacity-60"
             >
               {loading ? "Logging in..." : "Sign in"}
             </button>
