@@ -3,7 +3,7 @@ import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { authAPI } from "../../services/api";
 import Img from "../../assets/loginimg.png";
-
+import { StudentDashboard } from "../StudentDashboard";
 export default function LoginPage() {
   const navigate = useNavigate();
 
@@ -77,7 +77,50 @@ export default function LoginPage() {
       setLoading(false);
     }
   };
+  //     const response = await fetch("#", {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({
+  //         email,
+  //         password,
+  //         rememberMe,
+  //       }),
+  //     });
 
+  //     const data = await response.json();
+
+  //     if (!response.ok) {
+  //       throw new Error(data.message || "Login failed");
+  //     }
+
+  //     toast.success("Login successful");
+  //     setTimeout(() => navigate("/StudentDashboard"), 1200);
+  //   } catch (error) {
+  //     toast.error(error.message);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  try {
+  setLoading(true);
+
+  // ✅ DUMMY LOGIN CHECK
+  if (email === "student@careerx.com" && password === "careerx123") {
+    toast.success("Login successful");
+    setTimeout(() => navigate("/sdashboard"), 1200);
+    return;
+  }
+
+  // ❌ Invalid dummy credentials
+  throw new Error("Invalid email or password");
+
+} catch (error) {
+  toast.error(error.message);
+} finally {
+  setLoading(false);
+}
+  }
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#F5EFE8] px-4">
       <Toaster position="top-center" />
