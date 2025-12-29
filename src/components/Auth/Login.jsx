@@ -1,13 +1,9 @@
 import { useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-<<<<<<< Updated upstream
-import Img from "../../assets/login-img.png";
-import { StudentDashboard } from "../StudentDashboard";
-=======
+import { authAPI } from "../../services/api";
 import Img from "../../assets/loginimg.png";
->>>>>>> Stashed changes
-
+import { StudentDashboard } from "../StudentDashboard";
 export default function LoginPage() {
   const navigate = useNavigate();
 
@@ -32,10 +28,55 @@ export default function LoginPage() {
       return;
     }
 
-  //   try {
-  //     setLoading(true);
+    try {
+      setLoading(true);
 
-<<<<<<< Updated upstream
+      const response = await authAPI.login({ email, password });
+
+      if (response.data.token) {
+        localStorage.setItem('token', response.data.token);
+
+        // Store user info for name display
+        const user = response.data.user || {};
+        localStorage.setItem('user', JSON.stringify({
+          id: user.id || '',
+          email: user.email || '',
+          name: user.name || (user.email ? user.email.split('@')[0] : 'User'),
+          role: user.role || 'Student'
+        }));
+      }
+
+      toast.success("Login successful");
+
+      const userRole = response.data.user?.role || 'Student';
+      if (userRole === "Student") {
+        setTimeout(() => navigate("/studentdashboard"), 1200);
+      } else if (userRole === "Admin") {
+        setTimeout(() => navigate("/admindashboard"), 1200);
+      }
+
+    } catch (error) {
+      console.error('Login error:', error);
+      let errorMessage = "Login failed";
+
+      if (error.response) {
+        // Server responded with error status
+        errorMessage = error.response.data?.message ||
+          error.response.data?.error ||
+          `Server error: ${error.response.status}`;
+      } else if (error.request) {
+        // Network error - provide more specific guidance
+        errorMessage = "Cannot connect to server. Please ensure your backend API is running on http://localhost:5086";
+      } else {
+        // Other error
+        errorMessage = error.message || "An unexpected error occurred";
+      }
+
+      toast.error(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
   //     const response = await fetch("#", {
   //       method: "POST",
   //       headers: { "Content-Type": "application/json" },
@@ -45,14 +86,6 @@ export default function LoginPage() {
   //         rememberMe,
   //       }),
   //     });
-=======
-   
-      const response = await fetch("#", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
->>>>>>> Stashed changes
 
   //     const data = await response.json();
 
@@ -60,7 +93,6 @@ export default function LoginPage() {
   //       throw new Error(data.message || "Login failed");
   //     }
 
-<<<<<<< Updated upstream
   //     toast.success("Login successful");
   //     setTimeout(() => navigate("/StudentDashboard"), 1200);
   //   } catch (error) {
@@ -69,18 +101,6 @@ export default function LoginPage() {
   //     setLoading(false);
   //   }
   // };
-=======
-      
-      if (data.role === "admin") {
-        toast.success("Admin login successful");
-        navigate("/admin/dashboard");
-      } else if (data.role === "student") {
-        toast.success("Student login successful");
-        navigate("/student/dashboard");
-      } else {
-        toast.error("Unknown role");
-      }
->>>>>>> Stashed changes
 
   try {
   setLoading(true);
@@ -101,10 +121,10 @@ export default function LoginPage() {
   setLoading(false);
 }
   }
-
   return (
-<<<<<<< Updated upstream
     <div className="min-h-screen flex items-center justify-center bg-[#F5EFE8] px-4">
+      <Toaster position="top-center" />
+
       <div className="w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden md:flex">
         <div className="hidden md:block md:w-1/2 bg-[#C8D9E6]">
           <img
@@ -117,22 +137,6 @@ export default function LoginPage() {
         <div className="w-full md:w-1/2 p-10 flex flex-col justify-center">
           <div className="text-center mb-8">
             <h2 className="text-3xl font-semibold text-[#2F4156]">CareerX</h2>
-=======
-    <div className="min-h-screen flex items-center justify-center px-4">
-      <Toaster position="top-center" />
-      <div className="w-[1300px] h-[600px] bg-white rounded-2xl shadow-[0_0_35px_rgba(0,0,0,0.25)] overflow-hidden md:flex">
-        
-      
-        <div
-          className="hidden md:block md:w-1/2 bg-cover bg-center"
-          style={{ backgroundImage: `url(${Img})` }}
-        />
-
-     
-        <div className="w-full md:w-1/2 p-10 flex flex-col justify-center">
-          <div className="text-center mb-8">
-            <h1 className="text-5xl font-semibold text-[#2F4156]">CareerX</h1>
->>>>>>> Stashed changes
             <p className="text-sm text-[#567C8D] mt-2">
               Login using your registered Email ID
             </p>
@@ -202,4 +206,4 @@ export default function LoginPage() {
       </div>
     </div>
   );
-};
+}
