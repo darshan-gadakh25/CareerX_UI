@@ -1,7 +1,6 @@
 import axios from 'axios';
 
-// Base API configuration
-const API_BASE_URL = 'https://localhost:7001/api'; // Update with your .NET backend URL
+const API_BASE_URL = 'http://localhost:5086/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -21,7 +20,7 @@ api.interceptors.request.use((config) => {
 
 // Auth APIs
 export const authAPI = {
-  register: (userData) => api.post('/auth/register', userData),
+  register: (userData) => api.post('/users', userData),
   login: (credentials) => api.post('/auth/login', credentials),
   forgotPassword: (email) => api.post('/auth/forgot-password', { email }),
   resetPassword: (data) => api.post('/auth/reset-password', data),
@@ -29,8 +28,11 @@ export const authAPI = {
 
 // Student Profile APIs
 export const profileAPI = {
-  getProfile: () => api.get('/student/profile'),
-  updateProfile: (profileData) => api.put('/student/profile', profileData),
+  getProfile: () => api.get('/StudentProfile'),
+  getProfileById: (studentId) => api.get(`/StudentProfile/${studentId}`),
+  createProfile: (profileData) => api.post('/StudentProfile', profileData),
+  updateProfile: (profileData) => api.put('/StudentProfile', profileData),
+  deleteProfile: () => api.delete('/StudentProfile'),
   uploadProfilePicture: (formData) => api.post('/student/profile/picture', formData, {
     headers: { 'Content-Type': 'multipart/form-data' }
   }),

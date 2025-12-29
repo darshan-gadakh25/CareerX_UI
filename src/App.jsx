@@ -25,7 +25,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/sdashboard" element={<StudentDashboard />} />
+        <Route path="/studentdashboard" element={<StudentDashboard />} />
         <Route path="/profile" element={<StudentProfile />} />
         <Route path="/roadmap" element={<CareerRoadmap />} />
         <Route path="/chatbot" element={<AIChatbot />} />

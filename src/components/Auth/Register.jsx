@@ -1,6 +1,7 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { authAPI } from "../../services/api";
 import Img from "../../assets/login-img.png";
 
 export default function Register() {
@@ -10,7 +11,8 @@ export default function Register() {
     firstName: "",
     lastName: "",
     email: "",
-    phone: "",
+    age: "",
+    location: "",
     password: "",
     confirmPassword: "",
   });
@@ -18,7 +20,6 @@ export default function Register() {
   const [loading, setLoading] = useState(false);
 
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/;
-  const phoneRegex = /^[6-9]\d{9}$/;
   const passwordRegex = /^.{6,}$/;
 
   const handleChange = (e) => {
@@ -32,7 +33,8 @@ export default function Register() {
       firstName,
       lastName,
       email,
-      phone,
+      age,
+      location,
       password,
       confirmPassword,
     } = formData;
@@ -47,8 +49,13 @@ export default function Register() {
       return;
     }
 
-    if (!phoneRegex.test(phone)) {
-      toast.error("Enter a valid 10-digit phone number");
+    if (!age || age < 1) {
+      toast.error("Please enter a valid age");
+      return;
+    }
+
+    if (!location.trim()) {
+      toast.error("Please enter your location");
       return;
     }
 
@@ -65,29 +72,21 @@ export default function Register() {
     try {
       setLoading(true);
 
-      const response = await fetch("#", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          firstName,
-          lastName,
-          email,
-          phone,
-          password,
-        }),
-      });
+      const userData = {
+        name: `${firstName} ${lastName}`,
+        email,
+        password,
+        age: parseInt(age),
+        location,
+      };
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Registration failed");
-      }
+      const response = await authAPI.register(userData);
 
       toast.success("Registration successful");
       setTimeout(() => navigate("/login"), 1500);
 
     } catch (error) {
-      toast.error(error.message);
+      toast.error(error.response?.data?.message || error.message || "Registration failed");
     } finally {
       setLoading(false);
     }
@@ -150,13 +149,23 @@ export default function Register() {
             />
 
            
-            <input
-              name="phone"
-              placeholder="Phone Number"
-              onChange={handleChange}
-              className="w-full rounded-lg border border-[#C8D9E6] bg-[#F5EFE8]
-              px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#567C8D]"
-            />
+            <div className="flex gap-3">
+              <input
+                name="age"
+                type="number"
+                placeholder="Age"
+                onChange={handleChange}
+                className="w-1/2 rounded-lg border border-[#C8D9E6] bg-[#F5EFE8]
+                px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#567C8D]"
+              />
+              <input
+                name="location"
+                placeholder="Location"
+                onChange={handleChange}
+                className="w-1/2 rounded-lg border border-[#C8D9E6] bg-[#F5EFE8]
+                px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#567C8D]"
+              />
+            </div>
 
             
             <input

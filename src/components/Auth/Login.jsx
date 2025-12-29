@@ -1,6 +1,7 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { authAPI } from "../../services/api";
 import Img from "../../assets/login-img.png";
 import { StudentDashboard } from "../StudentDashboard";
 
@@ -57,23 +58,50 @@ export default function LoginPage() {
   // };
 
   try {
-  setLoading(true);
+    setLoading(true);
 
-  // ✅ DUMMY LOGIN CHECK
-  if (email === "student@careerx.com" && password === "careerx123") {
+    const response = await authAPI.login({ email, password });
+    
+    if (response.data.token) {
+      localStorage.setItem('token', response.data.token);
+      // Store user info for name display
+      const user = response.data.user || {};
+      localStorage.setItem('user', JSON.stringify({
+        id: user.id || '',
+        email: user.email || '',
+        name: user.name || (user.email ? user.email.split('@')[0] : 'User'),
+        role: user.role || 'Student'
+      }));
+    }
+    
     toast.success("Login successful");
-    setTimeout(() => navigate("/sdashboard"), 1200);
-    return;
+    const userRole = response.data.user?.role || 'Student';
+    if(userRole === "Student")
+      setTimeout(() => navigate("/studentdashboard"), 1200);
+    else if(userRole === "Admin")  
+      setTimeout(() => navigate("/admindashboard"), 1200);
+
+  } catch (error) {
+    console.error('Login error:', error);
+    let errorMessage = "Login failed";
+    
+    if (error.response) {
+      // Server responded with error status
+      errorMessage = error.response.data?.message || 
+                    error.response.data?.error || 
+                    `Server error: ${error.response.status}`;
+    } else if (error.request) {
+      // Network error
+      errorMessage = "Network error. Please check your connection.";
+    } else {
+      // Other error
+      errorMessage = error.message || "An unexpected error occurred";
+    }
+    
+    toast.error(errorMessage);
+  } finally {
+    setLoading(false);
   }
-
-  // ❌ Invalid dummy credentials
-  throw new Error("Invalid email or password");
-
-} catch (error) {
-  toast.error(error.message);
-} finally {
-  setLoading(false);
-}
   }
 
   return (
