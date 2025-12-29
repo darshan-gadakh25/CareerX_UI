@@ -1,21 +1,27 @@
 import { Toaster } from "react-hot-toast";
 import { Route, Routes } from "react-router-dom";
 
+import { About } from "./components/About.jsx";
 import ForgotPassword from "./components/Auth/ForgotPassword.jsx";
 import LoginPage from "./components/Auth/Login.jsx";
 import Register from "./components/Auth/Register.jsx";
 import ContactPage from "./components/ContactUs.jsx";
 import { Footer } from "./components/Footer.jsx";
 import { HomePage } from "./components/HomePage.jsx";
-import { BrowserRouter } from "react-router-dom";
-import { About } from "./components/About.jsx";
 import { StudentDashboard } from "./components/StudentDashboard.jsx";
 
+import { AICareerPaths } from "./components/AICareerPaths.jsx";
+import { AIChatbot } from "./components/AIChatbot.jsx";
+import { CareerRoadmap } from "./components/CareerRoadmap.jsx";
 import { NavBar } from "./components/NavBar.jsx";
 import { StudentProfile } from "./components/StudentProfile.jsx";
-import { CareerRoadmap } from "./components/CareerRoadmap.jsx";
-import { AIChatbot } from "./components/AIChatbot.jsx";
-import { AICareerPaths } from "./components/AICareerPaths.jsx";
+
+import { AdminDashboard } from "./components/Admin/AdminDashboard.jsx";
+import { StudentAssessments } from "./components/Admin/Assesments.jsx";
+import { Blogs } from "./components/Admin/Blog.jsx";
+import { ExploreCareers } from "./components/Admin/ExploreCareer.jsx";
+
+import { StudentAssessmentss } from "./components/CareerAssessment.jsx";
 
 
 
@@ -37,6 +43,14 @@ function App() {
         <Route path="/chatbot" element={<AIChatbot />} />
         <Route path="/ai-career-paths" element={<AICareerPaths />} />
         <Route path="/contact" element={<ContactPage />} />
+
+        <Route path="/assessments" element={<StudentAssessmentss />} />
+
+
+        <Route path="/admindashboard" element={<AdminDashboard />} />
+        <Route path="/admin/assessments" element={<StudentAssessments />} />
+        <Route path="/admin/ExploreCareer" element={<ExploreCareers />} />
+        <Route path="/admin/blogs" element={<Blogs />} />
 
 
 
