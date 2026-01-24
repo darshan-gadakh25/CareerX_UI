@@ -1,12 +1,45 @@
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { adminAPI } from "../../services/api";
+import toast from "react-hot-toast";
 
 export const AdminDashboard = () => {
   const navigate = useNavigate();
+  const [stats, setStats] = useState(null);
+  const [students, setStudents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showStudents, setShowStudents] = useState(false);
+
+  useEffect(() => {
+    fetchStats();
+    fetchStudents();
+  }, []);
+
+  const fetchStats = async () => {
+    try {
+      const response = await adminAPI.getStats();
+      setStats(response.data);
+    } catch (error) {
+      console.error("Failed to fetch stats", error);
+    }
+  };
+
+  const fetchStudents = async () => {
+    try {
+      const response = await adminAPI.getAllStudents();
+      setStudents(response.data || []);
+    } catch (error) {
+      console.error("Failed to fetch students", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleLogout = () => {
-    
-
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
     navigate("/login", { replace: true });
+    toast.success("Logged out successfully");
   };
 
   return (
@@ -44,20 +77,19 @@ export const AdminDashboard = () => {
           
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
 
-         
             <div className="bg-white p-6 rounded-xl shadow-sm
                             hover:-translate-y-1 hover:shadow-lg transition">
               <h3 className="text-xl font-semibold text-[#2F4156] mb-2">
-                Career Assessments
+                Student Management
               </h3>
               <p className="text-sm text-[#2F4156] mb-4">
-                Create, update and manage student assessments.
+                View and manage all student information, profiles, and assessments.
               </p>
               <Link
-                to="/admin/assessments"
+                to="/admin/students"
                 className="text-[#567C8D] font-medium hover:underline"
               >
-                Manage Assessments →
+                Manage Students →
               </Link>
             </div>
 
@@ -95,6 +127,94 @@ export const AdminDashboard = () => {
               </Link>
             </div>
 
+          </div>
+
+          {/* Statistics Section */}
+          {stats && (
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="bg-white p-6 rounded-xl shadow-sm">
+                <h3 className="text-sm text-gray-600 mb-2">Total Students</h3>
+                <p className="text-3xl font-bold text-[#2F4156]">{stats.totalStudents}</p>
+              </div>
+              <div className="bg-white p-6 rounded-xl shadow-sm">
+                <h3 className="text-sm text-gray-600 mb-2">Total Assessments</h3>
+                <p className="text-3xl font-bold text-[#2F4156]">{stats.totalAssessments}</p>
+              </div>
+              <div className="bg-white p-6 rounded-xl shadow-sm">
+                <h3 className="text-sm text-gray-600 mb-2">Completed Tests</h3>
+                <p className="text-3xl font-bold text-[#2F4156]">{stats.completedAssessments}</p>
+              </div>
+              <div className="bg-white p-6 rounded-xl shadow-sm">
+                <h3 className="text-sm text-gray-600 mb-2">Total Revenue</h3>
+                <p className="text-3xl font-bold text-[#2F4156]">₹{stats.totalRevenue?.toLocaleString() || 0}</p>
+              </div>
+            </div>
+          )}
+
+          {/* Student Management Section */}
+          <div className="bg-white p-6 rounded-xl shadow-sm">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-semibold text-[#2F4156]">
+                Student Management
+              </h2>
+              <button
+                onClick={() => setShowStudents(!showStudents)}
+                className="px-4 py-2 bg-[#2F4156] text-white rounded-lg hover:bg-[#567C8D]"
+              >
+                {showStudents ? "Hide" : "View All Students"}
+              </button>
+            </div>
+
+            {showStudents && (
+              <div className="mt-4">
+                {loading ? (
+                  <p className="text-center py-4">Loading students...</p>
+                ) : students.length === 0 ? (
+                  <p className="text-center py-4 text-gray-600">No students registered yet.</p>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead className="bg-[#C8D9E6]">
+                        <tr>
+                          <th className="px-4 py-2 text-left text-[#2F4156]">Name</th>
+                          <th className="px-4 py-2 text-left text-[#2F4156]">Email</th>
+                          <th className="px-4 py-2 text-left text-[#2F4156]">Location</th>
+                          <th className="px-4 py-2 text-left text-[#2F4156]">Profile Status</th>
+                          <th className="px-4 py-2 text-left text-[#2F4156]">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {students.map((student) => (
+                          <tr key={student.userId} className="border-b">
+                            <td className="px-4 py-2">{student.name}</td>
+                            <td className="px-4 py-2">{student.email}</td>
+                            <td className="px-4 py-2">{student.location || "N/A"}</td>
+                            <td className="px-4 py-2">
+                              {student.hasProfile ? (
+                                <span className="text-green-600">✓ Complete</span>
+                              ) : (
+                                <span className="text-orange-600">Incomplete</span>
+                              )}
+                            </td>
+                            <td className="px-4 py-2">
+                              <button
+                                onClick={() => {
+                                  // View student details
+                                  toast.info("Student details feature coming soon");
+                                }}
+                                className="text-[#567C8D] hover:underline"
+                              >
+                                View Details
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
          
