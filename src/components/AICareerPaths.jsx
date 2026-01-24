@@ -1,24 +1,42 @@
 import { useState, useEffect } from "react";
-import { subscriptionAPI } from "../services/api";
+import { useNavigate } from "react-router-dom";
+import { paymentAPI, roadmapAPI } from "../services/api";
+import toast from "react-hot-toast";
 
 export const AICareerPaths = () => {
-  const [hasSubscription, setHasSubscription] = useState(false);
-  const [profileComplete] = useState(true);
-  const [assessmentsComplete] = useState(true);
+  const navigate = useNavigate();
+  const [hasPayment, setHasPayment] = useState(false);
+  const [roadmaps, setRoadmaps] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [selectedPath, setSelectedPath] = useState(null);
 
-  // ✅ useEffect for API call
   useEffect(() => {
-    checkSubscriptionStatus();
+    checkPaymentAndLoadRoadmaps();
   }, []);
 
-  const checkSubscriptionStatus = async () => {
+  const checkPaymentAndLoadRoadmaps = async () => {
     try {
-      const response = await subscriptionAPI.checkSubscription();
-      setHasSubscription(response.data.isActive);
+      // Check if user has completed payment
+      const paymentResponse = await paymentAPI.getPaymentHistory();
+      const hasCompletedPayment = paymentResponse.data?.some(p => p.status === "Completed");
+      
+      if (hasCompletedPayment) {
+        setHasPayment(true);
+        // Load roadmaps
+        const roadmapResponse = await roadmapAPI.getMyRoadmaps();
+        if (roadmapResponse.data && roadmapResponse.data.length > 0) {
+          const latestRoadmap = roadmapResponse.data[0];
+          const careerOptions = JSON.parse(latestRoadmap.careerOptions || "[]");
+          setRoadmaps(careerOptions);
+        }
+      } else {
+        setHasPayment(false);
+      }
     } catch (error) {
-      console.error("Failed to check subscription:", error);
-      setHasSubscription(false);
+      console.error("Failed to check payment status:", error);
+      setHasPayment(false);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -62,20 +80,39 @@ export const AICareerPaths = () => {
     },
   ];
 
-  /* ===================== SUBSCRIPTION GATE ===================== */
-  if (!hasSubscription) {
+  /* ===================== PAYMENT GATE ===================== */
+  if (loading) {
+    return (
+      <div className="bg-[#F5EFE8] min-h-screen py-8 flex items-center justify-center">
+        <div className="text-xl">Loading...</div>
+      </div>
+    );
+  }
+
+  if (!hasPayment) {
     return (
       <div className="bg-[#F5EFE8] min-h-screen py-8 flex items-center justify-center">
         <div className="bg-white rounded-2xl shadow-lg p-12 text-center max-w-xl">
           <h2 className="text-2xl font-bold text-[#2F4156] mb-4">
             Unlock Personalized Career Guidance
           </h2>
-          <button
-            onClick={() => (window.location.href = "/payment")}
-            className="px-8 py-3 bg-[#2F4156] text-white rounded-lg"
-          >
-            Subscribe Now
-          </button>
+          <p className="text-[#2F4156] mb-6">
+            Complete an assessment and make a payment to view your personalized AI-generated career roadmap.
+          </p>
+          <div className="flex gap-4 justify-center">
+            <button
+              onClick={() => navigate("/assessments")}
+              className="px-6 py-3 border border-[#2F4156] text-[#2F4156] rounded-lg hover:bg-[#C8D9E6]"
+            >
+              Take Assessment
+            </button>
+            <button
+              onClick={() => navigate("/payment")}
+              className="px-6 py-3 bg-[#2F4156] text-white rounded-lg hover:bg-[#567C8D]"
+            >
+              Make Payment
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -114,25 +151,44 @@ export const AICareerPaths = () => {
           AI-Generated Career Recommendations
         </h1>
 
-        <div className="grid gap-8 lg:grid-cols-3">
-          {aiGeneratedPaths.map((path) => (
-            <div
-              key={path.id}
-              onClick={() => setSelectedPath(path)}
-              className="bg-white rounded-2xl shadow-lg p-6 cursor-pointer hover:shadow-xl transition"
+        {roadmaps.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-[#2F4156] mb-4">No career recommendations available yet.</p>
+            <button
+              onClick={() => navigate("/roadmap")}
+              className="px-6 py-3 bg-[#2F4156] text-white rounded-lg hover:bg-[#567C8D]"
             >
-              <h3 className="text-xl font-bold text-[#2F4156] mb-3">
-                {path.title}
-              </h3>
-              <p className="text-sm text-[#2F4156] mb-4">
-                {path.description}
-              </p>
-              <button className="w-full bg-[#2F4156] text-white py-2 rounded-lg">
-                View Detailed Path
-              </button>
-            </div>
-          ))}
-        </div>
+              Generate Roadmap
+            </button>
+          </div>
+        ) : (
+          <div className="grid gap-8 lg:grid-cols-3">
+            {roadmaps.map((path, index) => (
+              <div
+                key={index}
+                onClick={() => setSelectedPath(path)}
+                className="bg-white rounded-2xl shadow-lg p-6 cursor-pointer hover:shadow-xl transition"
+              >
+                <h3 className="text-xl font-bold text-[#2F4156] mb-3">
+                  {path.careerName || `Career Option ${index + 1}`}
+                </h3>
+                <p className="text-sm text-[#2F4156] mb-4">
+                  {path.whyFit || "Personalized career path based on your assessment"}
+                </p>
+                {path.fitScore && (
+                  <div className="mb-4">
+                    <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">
+                      Match: {path.fitScore}%
+                    </span>
+                  </div>
+                )}
+                <button className="w-full bg-[#2F4156] text-white py-2 rounded-lg hover:bg-[#567C8D]">
+                  View Detailed Path
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
