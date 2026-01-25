@@ -24,7 +24,7 @@ export const NavBar = () => {
       setUserRole(parsedUser.role);
 
       // Try to get updated name from profile
-      if (parsedUser.role === 'Student') {
+      if (parsedUser.role === 'STUDENT') {
         profileAPI.getProfile()
           .then(response => {
             if (response.data?.generalInformation?.name) {
@@ -98,7 +98,7 @@ export const NavBar = () => {
           )}
 
           {/* Student Dashboard Navigation */}
-          {userRole === 'Student' && (
+          {userRole === 'STUDENT' && (
             <>
               <Link
                 to="/studentdashboard"
@@ -128,7 +128,7 @@ export const NavBar = () => {
           )}
 
           {/* Admin Dashboard Navigation */}
-          {userRole === 'Admin' && (
+          {userRole === 'ADMIN' && (
             <>
               <Link
                 to="/admindashboard"
@@ -171,7 +171,7 @@ export const NavBar = () => {
 
               {showUserMenu && (
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
-                  {userRole === 'Admin' ? (
+                  {userRole === 'ADMIN' ? (
                     <Link
                       to="/admindashboard"
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
@@ -256,7 +256,7 @@ export const NavBar = () => {
           )}
 
           {/* Student Dashboard Navigation */}
-          {userRole === 'Student' && (
+          {userRole === 'STUDENT' && (
             <>
               <Link to="/studentdashboard" className={`block text-lg ${location.pathname === '/studentdashboard' ? 'text-[#567C8D]' : 'text-black'}`} onClick={() => setIsOpen(false)}>
                 Dashboard
@@ -274,7 +274,7 @@ export const NavBar = () => {
           )}
 
           {/* Admin Dashboard Navigation */}
-          {userRole === 'Admin' && (
+          {userRole === 'ADMIN' && (
             <>
               <Link to="/admindashboard" className={`block text-lg ${location.pathname === '/admindashboard' ? 'text-[#567C8D]' : 'text-black'}`} onClick={() => setIsOpen(false)}>
                 Dashboard
