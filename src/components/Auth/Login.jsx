@@ -43,9 +43,9 @@ export default function LoginPage() {
 
       const userRole = response.data.user?.role || 'Student';
       setTimeout(() => {
-        if (userRole === "Student") {
+        if (userRole === "STUDENT") {
           navigate("/studentdashboard");
-        } else if (userRole === "Admin") {
+        } else if (userRole === "ADMIN") {
           navigate("/admindashboard");
         } else {
           navigate("/"); // Fallback
