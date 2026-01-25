@@ -1,6 +1,59 @@
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { profileAPI, assessmentAPI } from "../services/api";
+import toast from "react-hot-toast";
 
 export const StudentDashboard = () => {
+  const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+  const [userName, setUserName] = useState("Student");
+  const [profilePicture, setProfilePicture] = useState(null);
+  const [assessments, setAssessments] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      const parsedUser = JSON.parse(userData);
+      setUser(parsedUser);
+      setUserName(parsedUser.userName || parsedUser.name || "Student");
+    }
+
+    fetchProfile();
+    fetchAssessments();
+  }, []);
+
+  const fetchProfile = async () => {
+    try {
+      const response = await profileAPI.getProfile();
+      if (response.data) {
+        setUserName(response.data.generalInformation.name || userName);
+        // Profile picture would come from user profile
+      }
+    } catch (error) {
+      // Profile might not exist yet
+      console.log("Profile not found");
+    }
+  };
+
+  const fetchAssessments = async () => {
+    try {
+      const response = await assessmentAPI.getMyAssessments();
+      setAssessments(response.data || []);
+    } catch (error) {
+      console.error("Failed to fetch assessments");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    navigate('/');
+    toast.success("Logged out successfully");
+  };
+
   return (
     <div className="bg-[#F5EFE8] min-h-screen">
 
@@ -17,7 +70,7 @@ export const StudentDashboard = () => {
               Welcome to CareerX 👋
             </h1>
             <p className="text-[#2F4156] mt-2">
-              Hello <span className="font-semibold">Student Name</span>, let’s
+              Hello <span className="font-semibold">{userName}</span>, let's
               shape your future together.
             </p>
           </div>
@@ -52,7 +105,7 @@ export const StudentDashboard = () => {
                 Learn about career roles, skills, and opportunities.
               </p>
               <Link
-                to="/careers"
+                to="/explore-careers"
                 className="text-[#567C8D] font-medium hover:underline"
               >
                 Explore →
@@ -128,6 +181,39 @@ export const StudentDashboard = () => {
             </div>
           </div>
 
+          {/* Assessment History */}
+          {assessments.length > 0 && (
+            <div className="bg-white p-6 rounded-xl shadow-sm">
+              <h2 className="text-2xl font-semibold text-[#2F4156] mb-4">
+                Your Assessment History
+              </h2>
+              <div className="space-y-3">
+                {assessments.slice(0, 3).map((assessment) => (
+                  <div
+                    key={assessment.studentAssessmentId}
+                    className="border border-[#C8D9E6] rounded-lg p-4"
+                  >
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <h3 className="font-semibold text-[#2F4156]">
+                          {assessment.title}
+                        </h3>
+                        <p className="text-sm text-gray-600">
+                          {assessment.score !== null
+                            ? `Score: ${assessment.score.toFixed(1)}%`
+                            : "In Progress"}
+                        </p>
+                      </div>
+                      <span className="text-sm text-gray-500">
+                        {new Date(assessment.completedAt || assessment.startedAt).toLocaleDateString()}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Recommendation Banner */}
           <div className="bg-[#C8D9E6] p-6 rounded-xl shadow-sm">
             <h2 className="text-2xl font-semibold text-[#2F4156] mb-1">
@@ -149,17 +235,24 @@ export const StudentDashboard = () => {
             <div className="w-24 h-24 mx-auto rounded-full 
                             bg-[#C8D9E6] overflow-hidden 
                             flex items-center justify-center">
-              {/* profile image goes here */}
-              <span className="text-sm text-[#2F4156]">
-                Upload Photo
-              </span>
+              {profilePicture ? (
+                <img
+                  src={profilePicture}
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <span className="text-sm text-[#2F4156]">
+                  {userName.charAt(0).toUpperCase()}
+                </span>
+              )}
             </div>
 
             <h3 className="mt-4 font-semibold text-[#2F4156]">
-              Student Name
+              {userName}
             </h3>
             <p className="text-sm text-[#2F4156]">
-              Class / Degree
+              Student
             </p>
           </div>
 
@@ -175,7 +268,7 @@ export const StudentDashboard = () => {
             </Link>
 
             <button
-              onClick={() => alert('Logout functionality (UI only)')}
+              onClick={handleLogout}
               className="block w-full text-center bg-red-500 
                          text-white py-2 rounded-lg 
                          hover:bg-red-600 transition"

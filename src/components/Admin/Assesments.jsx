@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { assessmentAPI } from "../../services/api";
 import toast from "react-hot-toast";
 
@@ -6,11 +6,32 @@ export const StudentAssessments = () => {
   const [assessments, setAssessments] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [editingAssessment, setEditingAssessment] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-    questions: [{ question: "", options: ["", "", "", ""] }]
+    questionsJson: "[]",
+    durationMinutes: 60,
+    isActive: true,
+    webcamRequired: true
   });
+
+  useEffect(() => {
+    fetchAssessments();
+  }, []);
+
+  const fetchAssessments = async () => {
+    try {
+      setLoading(true);
+      const response = await assessmentAPI.getAllAssessments();
+      setAssessments(response.data || []);
+    } catch (error) {
+      toast.error("Failed to load assessments");
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -48,27 +69,46 @@ export const StudentAssessments = () => {
 
   const openEditForm = (assessment) => {
     setEditingAssessment(assessment);
-    setFormData(assessment);
+    setFormData({
+      title: assessment.title || "",
+      description: assessment.description || "",
+      questionsJson: assessment.questionsJson || "[]",
+      durationMinutes: assessment.durationMinutes || 60,
+      isActive: assessment.isActive !== undefined ? assessment.isActive : true,
+      webcamRequired: assessment.webcamRequired !== undefined ? assessment.webcamRequired : true
+    });
     setShowForm(true);
   };
 
-  const saveAssessment = () => {
-    if (editingAssessment) {
-      // Edit existing assessment
-      const updated = assessments.map(a => a === editingAssessment ? formData : a);
-      setAssessments(updated);
-      toast.success("Assessment updated!");
-    } else {
-      // Add new assessment
-      setAssessments([...assessments, formData]);
-      toast.success("Assessment added!");
+  const saveAssessment = async () => {
+    try {
+      if (editingAssessment) {
+        await assessmentAPI.updateAssessment(editingAssessment.assessmentId, formData);
+        toast.success("Assessment updated successfully!");
+      } else {
+        await assessmentAPI.createAssessment(formData);
+        toast.success("Assessment created successfully!");
+      }
+      setShowForm(false);
+      fetchAssessments();
+    } catch (error) {
+      toast.error("Failed to save assessment");
+      console.error(error);
     }
-    setShowForm(false);
   };
 
-  const deleteAssessment = (assessment) => {
-    setAssessments(assessments.filter(a => a !== assessment));
-    toast.success("Assessment deleted!");
+  const deleteAssessment = async (assessment) => {
+    if (!confirm("Are you sure you want to delete this assessment?")) {
+      return;
+    }
+    try {
+      await assessmentAPI.deleteAssessment(assessment.assessmentId);
+      toast.success("Assessment deleted successfully!");
+      fetchAssessments();
+    } catch (error) {
+      toast.error("Failed to delete assessment");
+      console.error(error);
+    }
   };
 
   return (
@@ -83,20 +123,36 @@ export const StudentAssessments = () => {
         </button>
       </div>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {assessments.map((a, i) => (
-          <div key={i} className="bg-white p-4 rounded-2xl shadow-lg flex flex-col justify-between">
-            <div>
-              <h3 className="font-semibold text-lg">{a.title}</h3>
-              <p className="text-sm text-gray-600">{a.description}</p>
+      {loading ? (
+        <p className="text-center py-8">Loading assessments...</p>
+      ) : assessments.length === 0 ? (
+        <p className="text-center py-8 text-gray-600">No assessments found. Create your first assessment!</p>
+      ) : (
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {assessments.map((a) => (
+            <div key={a.assessmentId} className="bg-white p-4 rounded-2xl shadow-lg flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="font-semibold text-lg">{a.title}</h3>
+                  <span className={`px-2 py-1 text-xs rounded ${a.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                    {a.isActive ? 'Active' : 'Inactive'}
+                  </span>
+                </div>
+                <p className="text-sm text-gray-600 mb-2">{a.description}</p>
+                <div className="text-xs text-gray-500 space-y-1">
+                  <p>Duration: {a.durationMinutes} minutes</p>
+                  {a.webcamRequired && <p className="text-orange-600">📹 Webcam Required</p>}
+                  <p>Created: {new Date(a.createdAt).toLocaleDateString()}</p>
+                </div>
+              </div>
+              <div className="flex gap-2 mt-4">
+                <button onClick={() => openEditForm(a)} className="px-3 py-1 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600">Edit</button>
+                <button onClick={() => deleteAssessment(a)} className="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600">Delete</button>
+              </div>
             </div>
-            <div className="flex gap-2 mt-4">
-              <button onClick={() => openEditForm(a)} className="px-3 py-1 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600">Edit</button>
-              <button onClick={() => deleteAssessment(a)} className="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600">Delete</button>
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       {/* Form Modal */}
       {showForm && (
@@ -112,43 +168,64 @@ export const StudentAssessments = () => {
               onChange={handleInputChange}
               className="w-full p-2 border rounded-lg mb-4"
             />
-            <input
-              type="text"
+            <textarea
               placeholder="Description"
               name="description"
               value={formData.description}
               onChange={handleInputChange}
               className="w-full p-2 border rounded-lg mb-4"
+              rows="3"
             />
 
-            {formData.questions.map((q, qIndex) => (
-              <div key={qIndex} className="mb-4 border p-4 rounded-lg">
-                <div className="flex justify-between items-center mb-2">
-                  <input
-                    type="text"
-                    placeholder={`Question ${qIndex + 1}`}
-                    value={q.question}
-                    onChange={(e) => handleQuestionChange(qIndex, e.target.value)}
-                    className="w-full p-2 border rounded-lg"
-                  />
-                  <button onClick={() => removeQuestion(qIndex)} className="ml-2 px-2 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600">X</button>
-                </div>
-                {q.options.map((opt, oIndex) => (
-                  <input
-                    key={oIndex}
-                    type="text"
-                    placeholder={`Option ${String.fromCharCode(65 + oIndex)}`}
-                    value={opt}
-                    onChange={(e) => handleOptionChange(qIndex, oIndex, e.target.value)}
-                    className="w-full p-2 border rounded-lg mb-2"
-                  />
-                ))}
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">Duration (minutes)</label>
+                <input
+                  type="number"
+                  name="durationMinutes"
+                  value={formData.durationMinutes}
+                  onChange={handleInputChange}
+                  className="w-full p-2 border rounded-lg"
+                />
               </div>
-            ))}
+              <div className="flex items-center gap-4 mt-6">
+                <label className="flex items-center">
+                  <input
+                    type="checkbox"
+                    name="isActive"
+                    checked={formData.isActive}
+                    onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
+                    className="mr-2"
+                  />
+                  Active
+                </label>
+                <label className="flex items-center">
+                  <input
+                    type="checkbox"
+                    name="webcamRequired"
+                    checked={formData.webcamRequired}
+                    onChange={(e) => setFormData({ ...formData, webcamRequired: e.target.checked })}
+                    className="mr-2"
+                  />
+                  Webcam Required
+                </label>
+              </div>
+            </div>
 
-            <button onClick={addQuestion} className="px-4 py-2 mb-4 bg-[#2F4156] text-white rounded-lg hover:bg-[#567C8D">
-              + Add Question
-            </button>
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-2">Questions (JSON format)</label>
+              <textarea
+                placeholder='[{"id": 1, "questionText": "Question?", "options": ["A", "B", "C", "D"], "correctOptionIndex": 0, "category": "Aptitude"}]'
+                name="questionsJson"
+                value={formData.questionsJson}
+                onChange={handleInputChange}
+                className="w-full p-2 border rounded-lg font-mono text-sm"
+                rows="10"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Enter questions in JSON format. Questions will be auto-generated by AI if left empty.
+              </p>
+            </div>
 
             <div className="flex justify-end gap-2">
               <button onClick={() => setShowForm(false)} className="px-4 py-2 border rounded-lg">Cancel</button>
