@@ -23,11 +23,12 @@ export const authAPI = {
   register: (userData) => api.post('/users', userData),
   login: (credentials) => api.post('/auth/login', credentials),
   forgotPassword: (email) => api.post('/auth/forgot-password', { email }),
+  verifyOtp: (data) => api.post('/auth/verify-otp', data),
   resetPassword: (data) => api.post('/auth/reset-password', data),
 };
 
 // Student Profile APIs
-export const  profileAPI = {
+export const profileAPI = {
   getProfile: () => api.get('/StudentProfile'),
   getProfileById: (studentId) => api.get(`/StudentProfile/${studentId}`),
   createProfile: (profileData) => api.post('/StudentProfile', profileData),
