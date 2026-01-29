@@ -27,7 +27,7 @@ import { AdminStudents } from "./components/Admin/AdminStudents.jsx";
 import { ExploreCareers } from "./components/ExploreCareers.jsx";
 import { Blogs } from "./components/Blogs.jsx";
 
-import { StudentAssessmentss } from "./components/CareerAssessment.jsx";
+import { CareerAssessment } from "./components/CareerAssessment.jsx";
 import { PaymentPage } from "./components/PaymentPage.jsx";
 
 function App() {
@@ -59,7 +59,7 @@ function App() {
           <Route path="/ai-career-paths" element={<AICareerPaths />} />
           <Route path="/contact" element={<ContactPage />} />
 
-          <Route path="/assessments" element={<StudentAssessmentss />} />
+          <Route path="/assessments" element={<CareerAssessment />} />
           <Route path="/assessment" element={<AssessmentWithWebcam />} />
 
           <Route path="/explore-careers" element={<ExploreCareers />} />

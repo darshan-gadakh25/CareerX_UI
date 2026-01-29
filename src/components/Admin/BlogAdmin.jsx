@@ -12,7 +12,7 @@ export const BlogAdmin = () => {
     content: "",
     imageUrl: "",
     author: "",
-    isPublished: true
+    published: true
   });
 
   useEffect(() => {
@@ -43,7 +43,7 @@ export const BlogAdmin = () => {
       content: "",
       imageUrl: "",
       author: "",
-      isPublished: true
+      published: true
     });
     setShowForm(true);
   };
@@ -55,7 +55,7 @@ export const BlogAdmin = () => {
       content: blog.content || "",
       imageUrl: blog.imageUrl || "",
       author: blog.author || "",
-      isPublished: blog.isPublished !== undefined ? blog.isPublished : true
+      published: blog.published !== undefined ? blog.published : true
     });
     setShowForm(true);
   };
@@ -116,8 +116,8 @@ export const BlogAdmin = () => {
               )}
               <div className="flex items-center justify-between mb-2">
                 <h3 className="font-semibold text-lg">{blog.title}</h3>
-                <span className={`px-2 py-1 text-xs rounded ${blog.isPublished ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
-                  {blog.isPublished ? 'Published' : 'Draft'}
+                <span className={`px-2 py-1 text-xs rounded ${blog.published ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                  {blog.published ? 'Published' : 'Draft'}
                 </span>
               </div>
               <p className="text-sm text-gray-600 mb-2 line-clamp-2">{blog.content}</p>
@@ -136,7 +136,7 @@ export const BlogAdmin = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl p-6 w-full max-w-3xl max-h-[90vh] overflow-y-auto">
             <h2 className="text-xl font-bold mb-4">{editingBlog ? "Edit" : "Add"} Blog</h2>
-            
+
             <input
               type="text"
               placeholder="Title"
@@ -145,7 +145,7 @@ export const BlogAdmin = () => {
               onChange={handleInputChange}
               className="w-full p-2 border rounded-lg mb-4"
             />
-            
+
             <input
               type="text"
               placeholder="Author"
@@ -154,7 +154,7 @@ export const BlogAdmin = () => {
               onChange={handleInputChange}
               className="w-full p-2 border rounded-lg mb-4"
             />
-            
+
             <input
               type="text"
               placeholder="Image URL"
@@ -163,7 +163,7 @@ export const BlogAdmin = () => {
               onChange={handleInputChange}
               className="w-full p-2 border rounded-lg mb-4"
             />
-            
+
             <textarea
               placeholder="Content (supports HTML)"
               name="content"
@@ -172,13 +172,13 @@ export const BlogAdmin = () => {
               className="w-full p-2 border rounded-lg mb-4"
               rows="10"
             />
-            
+
             <label className="flex items-center mb-4">
               <input
                 type="checkbox"
-                name="isPublished"
-                checked={formData.isPublished}
-                onChange={(e) => setFormData({ ...formData, isPublished: e.target.checked })}
+                name="published"
+                checked={formData.published}
+                onChange={(e) => setFormData({ ...formData, published: e.target.checked })}
                 className="mr-2"
               />
               Publish immediately

@@ -42,7 +42,7 @@ export const profileAPI = {
 // Assessment APIs
 export const assessmentAPI = {
   getAvailableAssessments: () => api.get('/StudentAssessment/available'),
-  startAssessment: () => api.post('/StudentAssessment/start'),
+  startAssessment: (paymentId) => api.post('/StudentAssessment/start', { paymentId }),
   submitAssessment: (studentAssessmentId, data) => api.post(`/StudentAssessment/submit/${studentAssessmentId}`, data),
   getMyAssessments: () => api.get('/StudentAssessment/my-assessments'),
   getAssessmentReport: (studentAssessmentId) => api.get(`/StudentAssessment/report/${studentAssessmentId}`),

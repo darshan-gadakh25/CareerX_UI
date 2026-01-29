@@ -10,7 +10,6 @@ export const StudentDashboard = () => {
   const [profilePicture, setProfilePicture] = useState(null);
   const [assessments, setAssessments] = useState([]);
   const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     const userData = localStorage.getItem('user');
     if (userData) {
@@ -199,7 +198,7 @@ export const StudentDashboard = () => {
                           {assessment.title}
                         </h3>
                         <p className="text-sm text-gray-600">
-                          {assessment.score !== null
+                          {assessment.score != null && assessment.score !== undefined
                             ? `Score: ${assessment.score.toFixed(1)}%`
                             : "In Progress"}
                         </p>

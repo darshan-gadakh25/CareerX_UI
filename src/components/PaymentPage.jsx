@@ -1,15 +1,22 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { paymentAPI, roadmapAPI } from "../services/api";
+import { useNavigate, useLocation } from "react-router-dom";
+import { paymentAPI, roadmapAPI, assessmentAPI } from "../services/api";
 import toast from "react-hot-toast";
 
 export const PaymentPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [amount, setAmount] = useState(999); // Default amount
   const [loading, setLoading] = useState(false);
   const [orderData, setOrderData] = useState(null);
 
+  const { type = 'ROADMAP', message } = location.state || {};
+
   useEffect(() => {
+    if (location.state?.amount) {
+      setAmount(location.state.amount);
+    }
+
     // Load Razorpay script
     const script = document.createElement("script");
     script.src = "https://checkout.razorpay.com/v1/checkout.js";
@@ -19,14 +26,17 @@ export const PaymentPage = () => {
     return () => {
       document.body.removeChild(script);
     };
-  }, []);
+  }, [location.state]);
 
   const handlePayment = async () => {
     try {
       setLoading(true);
-      
+
       // Create order
-      const response = await paymentAPI.createOrder({ amount });
+      const response = await paymentAPI.createOrder({
+        amount,
+        requestType: type
+      });
       setOrderData(response.data);
 
       // Initialize Razorpay
@@ -35,7 +45,7 @@ export const PaymentPage = () => {
         amount: response.data.amount,
         currency: "INR",
         name: "CareerX",
-        description: "Career Roadmap Generation",
+        description: message || "Career Services",
         order_id: response.data.orderId,
         handler: async function (response) {
           try {
@@ -46,17 +56,28 @@ export const PaymentPage = () => {
               razorpaySignature: response.razorpay_signature,
             });
 
-            toast.success("Payment successful! Generating your roadmap...");
+            toast.success("Payment successful!");
 
-            // Generate roadmap
-            const roadmapResponse = await roadmapAPI.generateRoadmap(
-              verifyResponse.data.paymentId
-            );
+            // Post-payment actions
+            if (type === 'ROADMAP') {
+              toast.loading("Generating roadmap...");
+              const roadmapResponse = await roadmapAPI.generateRoadmap(
+                verifyResponse.data.paymentId
+              );
+              toast.dismiss();
+              toast.success("Roadmap generated!");
+              navigate("/roadmap", { state: { roadmap: roadmapResponse.data } });
+            } else if (type === 'ASSESSMENT') {
+              toast.loading("Starting assessment...");
+              // Start assessment with payment ID
+              await assessmentAPI.startAssessment(verifyResponse.data.paymentId);
+              toast.dismiss();
+              navigate("/assessment");
+            }
 
-            toast.success("Roadmap generated successfully! Check your email.");
-            navigate("/roadmap", { state: { roadmap: roadmapResponse.data } });
           } catch (error) {
-            toast.error("Payment verification failed");
+            toast.dismiss();
+            toast.error("Action failed after payment: " + (error.response?.data?.error || error.message));
             console.error(error);
           }
         },
@@ -92,20 +113,31 @@ export const PaymentPage = () => {
     <div className="min-h-screen bg-[#F5EFE8] flex items-center justify-center py-12">
       <div className="max-w-2xl w-full bg-white rounded-2xl shadow-lg p-8">
         <h1 className="text-3xl font-bold text-[#2F4156] mb-6 text-center">
-          Complete Payment to Generate Your Roadmap
+          Complete Payment
         </h1>
 
         <div className="space-y-6">
           <div className="bg-[#C8D9E6] p-6 rounded-lg">
             <h2 className="text-xl font-semibold text-[#2F4156] mb-4">
-              What You'll Get:
+              {message || "Service Description"}
             </h2>
             <ul className="space-y-2 text-[#2F4156]">
-              <li>✓ Personalized career roadmap for top 3 career options</li>
-              <li>✓ Step-by-step guidance from basic to advanced</li>
-              <li>✓ Detailed skill requirements and certifications</li>
-              <li>✓ Job market outlook and salary information</li>
-              <li>✓ Roadmap delivered to your email</li>
+              {type === 'ROADMAP' ? (
+                <>
+                  <li>✓ Personalized career roadmap for top 3 career options</li>
+                  <li>✓ Step-by-step guidance from basic to advanced</li>
+                  <li>✓ Detailed skill requirements and certifications</li>
+                  <li>✓ Job market outlook and salary information</li>
+                  <li>✓ Valid for 2 years</li>
+                </>
+              ) : (
+                <>
+                  <li>✓ Comprehensive AI-driven Career Assessment</li>
+                  <li>✓ 60-minute session with personalized report</li>
+                  <li>✓ Evaluation of technical and soft skills</li>
+                  <li>✓ Detailed career recommendations</li>
+                </>
+              )}
             </ul>
           </div>
 
