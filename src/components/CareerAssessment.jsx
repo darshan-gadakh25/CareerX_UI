@@ -4,12 +4,12 @@ import { assessmentAPI } from "../services/api";
 import { AssessmentWithWebcam } from "./AssessmentWithWebcam";
 import toast from "react-hot-toast";
 
-export const StudentAssessmentss = () => {
+export const CareerAssessment = () => {
   const navigate = useNavigate();
   const [assessments, setAssessments] = useState([]);
   const [activeAssessment, setActiveAssessment] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [startedAssessmentId, setStartedAssessmentId] = useState(null);
+  const [needsPayment, setNeedsPayment] = useState(false);
 
   useEffect(() => {
     fetchAssessments();
@@ -19,8 +19,15 @@ export const StudentAssessmentss = () => {
     try {
       setLoading(true);
       const response = await assessmentAPI.getAvailableAssessments();
-      // Response will have canTakeAssessment, hasInProgress, etc.
-      setAssessments(response.data);
+      const data = response.data;
+      setAssessments(data);
+
+      // Check if payment is needed: User has completed one, and no active session to resume
+      if (data.hasCompleted && !data.hasInProgress) {
+        setNeedsPayment(true);
+      } else {
+        setNeedsPayment(false);
+      }
     } catch (error) {
       toast.error("Failed to load assessments");
       console.error(error);
@@ -31,8 +38,35 @@ export const StudentAssessmentss = () => {
 
   const handleStartAssessment = async () => {
     try {
+      if (needsPayment) {
+        // Redirect to payment page
+        navigate('/payment', {
+          state: {
+            type: 'ASSESSMENT',
+            amount: 499, // Set assessment price
+            message: "Retake Career Assessment"
+          }
+        });
+        return;
+      }
+
       setLoading(true);
-      // Navigate to dedicated assessment page
+      // Start free or resume assessment
+      // If we are resuming, we should ideally call startAssessment to get the ID/Questions
+      // But the existing code just navigated to '/assessment'. 
+      // I will assume '/assessment' page calls startAssessment or handles it.
+      // Actually, looking at the previous file content, it just navigates. 
+      // Let's stick to the existing navigation flow, assuming AssessmentPage handles the start call.
+      // WAIT: The previous code just navigated. If AssessmentPage calls startAssessment(), it needs to handle paymentId too?
+      // Or does CareerAssessment call start and pass data?
+      // The previous code: `navigate('/assessment');`
+      // I should verify what `/assessment` maps to. It looks like it might accept state/props.
+
+      // Let's actually call startAssessment HERE to verify/init, then navigate? 
+      // Or just navigate and let the next page handle it?
+      // If I interpret "AssessmentWithWebcam" or "CareerAssessment" correctly...
+      // The snippet showing `StudentAssessmentss` seems to normally navigate to `/assessment`.
+
       navigate('/assessment');
     } catch (error) {
       toast.error("Failed to start assessment. Please complete your profile first.");
@@ -63,21 +97,6 @@ export const StudentAssessmentss = () => {
           <div className="text-center text-[#2F4156]">
             <p>Loading...</p>
           </div>
-        ) : assessments?.hasCompleted ? (
-          <div className="bg-white p-8 rounded-2xl shadow text-center">
-            <h2 className="text-2xl font-bold text-[#2F4156] mb-4">
-              Assessment Completed
-            </h2>
-            <p className="text-[#2F4156] mb-6">
-              You have already completed the assessment. Check your dashboard for results.
-            </p>
-            <button
-              onClick={() => navigate('/studentdashboard')}
-              className="bg-[#2F4156] text-white px-6 py-3 rounded-lg hover:bg-[#567C8D]"
-            >
-              Go to Dashboard
-            </button>
-          </div>
         ) : !assessments?.canTakeAssessment ? (
           <div className="bg-white p-8 rounded-2xl shadow text-center">
             <h2 className="text-2xl font-bold text-[#2F4156] mb-4">
@@ -96,11 +115,13 @@ export const StudentAssessmentss = () => {
         ) : (
           <div className="bg-white p-8 rounded-2xl shadow">
             <h2 className="text-2xl font-bold text-[#2F4156] mb-4">
-              AI-Generated Career Assessment
+              {needsPayment ? "Retake Career Assessment" : "AI-Generated Career Assessment"}
             </h2>
 
             <p className="text-[#2F4156] mb-6">
-              Take our comprehensive 60-question assessment to receive personalized career recommendations based on your profile, skills, and interests.
+              {needsPayment
+                ? "You have already completed an assessment. You can take it again to see how your skills have improved."
+                : "Take our comprehensive 60-question assessment to receive personalized career recommendations based on your profile, skills, and interests."}
             </p>
 
             <div className="space-y-4 mb-6">
@@ -119,10 +140,22 @@ export const StudentAssessmentss = () => {
                 </div>
               </div>
               <div className="flex items-start space-x-3">
-                <span className="text-[#567C8D] text-xl">📹</span>
+                <span className="text-[#567C8D] text-xl">
+                  {needsPayment ? '💳' : '📹'}
+                </span>
                 <div>
-                  <p className="font-semibold text-[#2F4156]">Webcam Required</p>
-                  <p className="text-sm text-gray-600">For assessment monitoring and integrity</p>
+                  {needsPayment ? (
+                    <>
+                      <p className="font-semibold text-[#2F4156]">Assessment Fee: ₹499</p>
+                      <p className="text-sm text-gray-600">Payment required for retake</p>
+                    </>
+                  ) : (
+                    <>
+                      <p className="font-semibold text-[#2F4156]">Webcam Required</p>
+                      <p className="text-sm text-gray-600">For assessment monitoring and integrity</p>
+                    </>
+                  )}
+
                 </div>
               </div>
               <div className="flex items-start space-x-3">
@@ -139,7 +172,7 @@ export const StudentAssessmentss = () => {
               disabled={loading}
               className="w-full bg-[#2F4156] text-white py-3 rounded-lg hover:bg-[#567C8D] transition font-medium disabled:opacity-50"
             >
-              {loading ? "Starting Assessment..." : "Start Assessment"}
+              {loading ? "Starting Assessment..." : (needsPayment ? "Pay & Start Assessment" : "Start Assessment")}
             </button>
           </div>
         )}

@@ -6,13 +6,13 @@ export const StudentProfile = () => {
   const [formData, setFormData] = useState({
     // Profile Picture
     profilePicture: null,
-    
+
     // Basic Information
     dateOfBirth: "",
     gender: "",
     mobileNumber: "",
     preferredLanguage: "",
-    
+
     // Academic Details
     currentEducationLevel: "",
     boardOrUniversity: "",
@@ -20,26 +20,26 @@ export const StudentProfile = () => {
     stream: "",
     currentYearOrSemester: "",
     overallPercentageOrCGPA: "",
-    
+
     // Education Gap
     hasTakenGapYear: false,
     numberOfGapYears: "",
     reasonForGap: "",
-    
+
     // Career Interests
     areasOfInterest: "",
     preferredCareerDomain: [],
     dreamJobOrRole: "",
-    
+
     // Skills & Strengths
     technicalSkills: "",
     softSkills: "",
     skillLevel: "",
-    
+
     // Hobbies & Activities
     hobbies: "",
     extracurricularActivities: "",
-    
+
     // Achievements & Certifications
     academicAchievements: "",
     scholarships: "",
@@ -50,7 +50,7 @@ export const StudentProfile = () => {
     certificationCourseName: "",
     certificationPlatform: "",
     certificationYear: "",
-    
+
     // Entrance Exams
     appearedForCompetitiveExams: false,
     examName: "",
@@ -65,7 +65,7 @@ export const StudentProfile = () => {
 
   const sections = [
     "Basic Information",
-    "Academic Details", 
+    "Academic Details",
     "Education Gap",
     "Career Interests",
     "Skills & Strengths",
@@ -84,7 +84,7 @@ export const StudentProfile = () => {
       setLoading(true);
       const response = await profileAPI.getProfile();
       setExistingProfile(response.data);
-      
+
       // Pre-fill form with existing data
       if (response.data) {
         const profile = response.data;
@@ -199,7 +199,7 @@ export const StudentProfile = () => {
         }));
       };
       reader.readAsDataURL(file);
-      
+
       // Upload to backend
       uploadProfilePicture(file);
     }
@@ -209,7 +209,7 @@ export const StudentProfile = () => {
     try {
       const formData = new FormData();
       formData.append('profilePicture', file);
-      
+
       await profileAPI.uploadProfilePicture(formData);
       toast.success('Profile picture uploaded successfully!');
     } catch (error) {
@@ -233,17 +233,17 @@ export const StudentProfile = () => {
           schoolOrCollegeName: profileData.schoolOrCollegeName || '',
           streams: profileData.stream || null,
           currentYearOrSemester: profileData.currentYearOrSemester || '',
-          overallPercentageOrCGPA: profileData.overallPercentageOrCGPA ? 
+          overallPercentageOrCGPA: profileData.overallPercentageOrCGPA ?
             parseFloat(profileData.overallPercentageOrCGPA) : null,
           hasTakenGapYear: Boolean(profileData.hasTakenGapYear),
-          numberOfGapYears: profileData.hasTakenGapYear ? 
+          numberOfGapYears: profileData.hasTakenGapYear ?
             parseInt(profileData.numberOfGapYears) || null : null,
-          reasonForGap: profileData.hasTakenGapYear && profileData.reasonForGap ? 
+          reasonForGap: profileData.hasTakenGapYear && profileData.reasonForGap ?
             profileData.reasonForGap : null
         },
         CareerInterests: {
           areasOfInterest: profileData.areasOfInterest || null,
-          preferredCareerDomain: profileData.preferredCareerDomain?.length > 0 ? 
+          preferredCareerDomain: profileData.preferredCareerDomain?.length > 0 ?
             profileData.preferredCareerDomain.join(',') : null,
           dreamJobOrRole: profileData.dreamJobOrRole || ''
         },
@@ -265,22 +265,22 @@ export const StudentProfile = () => {
           certifications: profileData.certifications || '',
           certificationCourseName: profileData.certificationCourseName || '',
           certificationPlatform: profileData.certificationPlatform || '',
-          certificationYear: profileData.certificationYear ? 
+          certificationYear: profileData.certificationYear ?
             parseInt(profileData.certificationYear) : null
         },
         EntranceExams: {
           appearedForCompetitiveExams: Boolean(profileData.appearedForCompetitiveExams),
-          examName: profileData.appearedForCompetitiveExams ? 
+          examName: profileData.appearedForCompetitiveExams ?
             (profileData.examName || '') : '',
-          examScoreOrRank: profileData.appearedForCompetitiveExams ? 
+          examScoreOrRank: profileData.appearedForCompetitiveExams ?
             (profileData.examScoreOrRank || '') : '',
-          examYear: profileData.appearedForCompetitiveExams && profileData.examYear ? 
+          examYear: profileData.appearedForCompetitiveExams && profileData.examYear ?
             parseInt(profileData.examYear) : null
         }
       };
-      
+
       console.log('Sending formatted data:', JSON.stringify(formattedData, null, 2));
-      
+
       // Use create or update based on existing profile
       if (existingProfile) {
         await profileAPI.updateProfile(formattedData);
@@ -289,20 +289,26 @@ export const StudentProfile = () => {
         await profileAPI.createProfile(formattedData);
         toast.success('Profile created successfully!');
       }
-      
+
       // Reload profile to get updated data
       await loadProfile();
     } catch (error) {
       console.error('Failed to save profile:', error);
-      
+
       let errorMessage = 'Failed to save profile';
-      if (error.response?.data?.errors) {
-        const errors = Object.values(error.response.data.errors).flat();
-        errorMessage = errors.join(', ');
-      } else if (error.response?.data?.message) {
-        errorMessage = error.response.data.message;
+      const responseData = error.response?.data;
+
+      if (responseData) {
+        if (responseData.message === "Validation failed" && responseData.data) {
+          errorMessage = responseData.data;
+        } else if (responseData.errors) {
+          const errors = Object.values(responseData.errors).flat();
+          errorMessage = errors.join(', ');
+        } else if (responseData.message) {
+          errorMessage = responseData.message;
+        }
       }
-      
+
       toast.error(errorMessage);
       throw error;
     }
@@ -318,7 +324,7 @@ export const StudentProfile = () => {
   const handleMultiSelect = (field, value) => {
     setFormData(prev => ({
       ...prev,
-      [field]: prev[field].includes(value) 
+      [field]: prev[field].includes(value)
         ? prev[field].filter(item => item !== value)
         : [...prev[field], value]
     }));
@@ -380,7 +386,7 @@ export const StudentProfile = () => {
             className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#567C8D] focus:border-transparent"
           />
         </div>
-        
+
         <div>
           <label className="block text-sm font-medium text-[#2F4156] mb-2">
             Gender
@@ -396,7 +402,7 @@ export const StudentProfile = () => {
             <option value="Other">Other</option>
           </select>
         </div>
-        
+
         <div>
           <label className="block text-sm font-medium text-[#2F4156] mb-2">
             Mobile Number
@@ -410,7 +416,7 @@ export const StudentProfile = () => {
             placeholder="10-digit mobile number"
           />
         </div>
-        
+
         <div>
           <label className="block text-sm font-medium text-[#2F4156] mb-2">
             Preferred Language
@@ -448,7 +454,7 @@ export const StudentProfile = () => {
             <option value="Other">Other</option>
           </select>
         </div>
-        
+
         <div>
           <label className="block text-sm font-medium text-[#2F4156] mb-2">
             Stream
@@ -465,7 +471,7 @@ export const StudentProfile = () => {
             <option value="Other">Other</option>
           </select>
         </div>
-        
+
         <div>
           <label className="block text-sm font-medium text-[#2F4156] mb-2">
             Board/University
@@ -478,7 +484,7 @@ export const StudentProfile = () => {
             placeholder="e.g., CBSE, Mumbai University"
           />
         </div>
-        
+
         <div>
           <label className="block text-sm font-medium text-[#2F4156] mb-2">
             School/College Name
@@ -490,7 +496,7 @@ export const StudentProfile = () => {
             className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#567C8D] focus:border-transparent"
           />
         </div>
-        
+
         <div>
           <label className="block text-sm font-medium text-[#2F4156] mb-2">
             Current Year/Semester
@@ -503,7 +509,7 @@ export const StudentProfile = () => {
             placeholder="e.g., 2nd Year, 4th Semester"
           />
         </div>
-        
+
         <div>
           <label className="block text-sm font-medium text-[#2F4156] mb-2">
             Overall Percentage/CGPA
@@ -549,7 +555,7 @@ export const StudentProfile = () => {
           </label>
         </div>
       </div>
-      
+
       {formData.hasTakenGapYear && (
         <div className="grid gap-6 md:grid-cols-2">
           <div>
@@ -563,7 +569,7 @@ export const StudentProfile = () => {
               className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#567C8D] focus:border-transparent"
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-[#2F4156] mb-2">
               Reason for Gap
@@ -610,7 +616,7 @@ export const StudentProfile = () => {
             <option value="Other">Other</option>
           </select>
         </div>
-        
+
         <div>
           <label className="block text-sm font-medium text-[#2F4156] mb-2">
             Dream Job/Role
@@ -650,7 +656,7 @@ export const StudentProfile = () => {
             <option value="Other">Other</option>
           </select>
         </div>
-        
+
         <div>
           <label className="block text-sm font-medium text-[#2F4156] mb-2">
             Soft Skills
@@ -670,7 +676,7 @@ export const StudentProfile = () => {
             <option value="Other">Other</option>
           </select>
         </div>
-        
+
         <div>
           <label className="block text-sm font-medium text-[#2F4156] mb-2">
             Skill Level
@@ -705,7 +711,7 @@ export const StudentProfile = () => {
             placeholder="List your hobbies"
           />
         </div>
-        
+
         <div>
           <label className="block text-sm font-medium text-[#2F4156] mb-2">
             Extracurricular Activities
@@ -736,7 +742,7 @@ export const StudentProfile = () => {
             rows="2"
           />
         </div>
-        
+
         <div>
           <label className="block text-sm font-medium text-[#2F4156] mb-2">
             Scholarships
@@ -748,7 +754,7 @@ export const StudentProfile = () => {
             rows="2"
           />
         </div>
-        
+
         <div>
           <label className="block text-sm font-medium text-[#2F4156] mb-2">
             Certifications
@@ -760,7 +766,7 @@ export const StudentProfile = () => {
             rows="2"
           />
         </div>
-        
+
         <div>
           <label className="block text-sm font-medium text-[#2F4156] mb-2">
             Competitions/Hackathons
@@ -805,7 +811,7 @@ export const StudentProfile = () => {
           </label>
         </div>
       </div>
-      
+
       {formData.appearedForCompetitiveExams && (
         <div className="grid gap-6 md:grid-cols-2">
           <div>
@@ -820,7 +826,7 @@ export const StudentProfile = () => {
               placeholder="e.g., JEE, NEET, CAT"
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-[#2F4156] mb-2">
               Score/Rank
@@ -832,7 +838,7 @@ export const StudentProfile = () => {
               className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#567C8D] focus:border-transparent"
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-[#2F4156] mb-2">
               Exam Year
@@ -964,8 +970,8 @@ export const StudentProfile = () => {
             {existingProfile && !isEditing ? 'Student Profile' : 'Complete Your Profile'}
           </h1>
           <p className="text-[#2F4156]">
-            {existingProfile && !isEditing 
-              ? 'View and manage your profile information' 
+            {existingProfile && !isEditing
+              ? 'View and manage your profile information'
               : 'Help us understand you better to provide personalized career guidance'
             }
           </p>
@@ -987,7 +993,7 @@ export const StudentProfile = () => {
                 </span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
-                <div 
+                <div
                   className="bg-[#567C8D] h-2 rounded-full transition-all duration-300"
                   style={{ width: `${((currentSection + 1) / sections.length) * 100}%` }}
                 ></div>
@@ -1006,13 +1012,13 @@ export const StudentProfile = () => {
                   </button>
                 </div>
               )}
-              
+
               <h2 className="text-2xl font-semibold text-[#2F4156] mb-6">
                 {sections[currentSection]}
               </h2>
-              
+
               {renderCurrentSection()}
-              
+
               {/* Navigation Buttons */}
               <div className="flex justify-between mt-8">
                 <button
@@ -1022,16 +1028,16 @@ export const StudentProfile = () => {
                 >
                   Previous
                 </button>
-                
+
                 {currentSection === sections.length - 1 ? (
                   <button
                     onClick={async (e) => {
                       try {
                         e.target.disabled = true;
                         e.target.textContent = 'Saving...';
-                        
+
                         await saveProfileToDatabase(formData);
-                        
+
                         e.target.textContent = 'Saved!';
                         setTimeout(() => {
                           e.target.textContent = existingProfile ? 'Update Profile' : 'Save Profile';

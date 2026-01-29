@@ -26,7 +26,9 @@ export const ExploreCareerAdmin = () => {
     try {
       setLoading(true);
       const response = await careerAPI.getCareers();
-      setCareers(response.data || []);
+      // Handle ApiResponse structure (data.data) or direct list
+      const careerList = response.data?.data || response.data || [];
+      setCareers(Array.isArray(careerList) ? careerList : []);
     } catch (error) {
       toast.error("Failed to load careers");
       console.error(error);
@@ -75,7 +77,7 @@ export const ExploreCareerAdmin = () => {
         ...formData,
         averageSalary: formData.averageSalary ? parseFloat(formData.averageSalary) : null
       };
-      
+
       if (editingCareer) {
         await careerAPI.updateCareer(editingCareer.careerId, dataToSave);
         toast.success("Career updated successfully!");
@@ -149,7 +151,7 @@ export const ExploreCareerAdmin = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl p-6 w-full max-w-3xl max-h-[90vh] overflow-y-auto">
             <h2 className="text-xl font-bold mb-4">{editingCareer ? "Edit" : "Add"} Career</h2>
-            
+
             <input
               type="text"
               placeholder="Title"
@@ -158,7 +160,7 @@ export const ExploreCareerAdmin = () => {
               onChange={handleInputChange}
               className="w-full p-2 border rounded-lg mb-4"
             />
-            
+
             <textarea
               placeholder="Description"
               name="description"
@@ -167,7 +169,7 @@ export const ExploreCareerAdmin = () => {
               className="w-full p-2 border rounded-lg mb-4"
               rows="3"
             />
-            
+
             <input
               type="text"
               placeholder="Image URL"
@@ -176,7 +178,7 @@ export const ExploreCareerAdmin = () => {
               onChange={handleInputChange}
               className="w-full p-2 border rounded-lg mb-4"
             />
-            
+
             <input
               type="text"
               placeholder="Required Education"
@@ -185,7 +187,7 @@ export const ExploreCareerAdmin = () => {
               onChange={handleInputChange}
               className="w-full p-2 border rounded-lg mb-4"
             />
-            
+
             <input
               type="text"
               placeholder="Skills Required (comma-separated)"
@@ -194,7 +196,7 @@ export const ExploreCareerAdmin = () => {
               onChange={handleInputChange}
               className="w-full p-2 border rounded-lg mb-4"
             />
-            
+
             <input
               type="text"
               placeholder="Job Sector"
@@ -203,7 +205,7 @@ export const ExploreCareerAdmin = () => {
               onChange={handleInputChange}
               className="w-full p-2 border rounded-lg mb-4"
             />
-            
+
             <input
               type="number"
               placeholder="Average Salary"
@@ -212,7 +214,7 @@ export const ExploreCareerAdmin = () => {
               onChange={handleInputChange}
               className="w-full p-2 border rounded-lg mb-4"
             />
-            
+
             <textarea
               placeholder="Career Path"
               name="careerPath"

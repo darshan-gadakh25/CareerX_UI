@@ -45,15 +45,37 @@ export const AssessmentWithWebcam = ({ studentAssessmentId: initialStudentAssess
     try {
       setLoading(true);
       const response = await assessmentAPI.startAssessment();
-      setQuestions(response.data.questions || []);
+
+      console.log("=== ASSESSMENT START DEBUG ===");
+      console.log("Full response:", response.data);
+      console.log("Questions:", response.data.questions);
+      console.log("Questions type:", typeof response.data.questions);
+      console.log("Is array?:", Array.isArray(response.data.questions));
+
+      const qs = response.data.questions || [];
+
+      console.log("Questions length:", qs.length);
+      if (qs.length > 0) {
+        console.log("First question:", qs[0]);
+      }
+      console.log("=== END DEBUG ===");
+
+      if (!Array.isArray(qs) || qs.length === 0) {
+        toast.error("No questions received. Please try again.");
+        navigate("/assessments");
+        return;
+      }
+
+      setQuestions(qs);
       setStudentAssessmentId(response.data.studentAssessmentId);
       setTimeLeft((response.data.durationMinutes || 60) * 60);
-      
+
       if (response.data.webcamRequired) {
         requestWebcamPermission();
       }
     } catch (error) {
-      toast.error("Failed to start assessment");
+      console.error("Assessment start error:", error);
+      toast.error("Failed to start assessment: " + (error.response?.data || error.message));
       navigate("/assessments");
     } finally {
       setLoading(false);
@@ -97,7 +119,7 @@ export const AssessmentWithWebcam = ({ studentAssessmentId: initialStudentAssess
 
     try {
       setSubmitting(true);
-      
+
       // Capture webcam image if enabled
       let webcamUrl = null;
       if (webcamRef.current && webcamEnabled) {
@@ -140,7 +162,9 @@ export const AssessmentWithWebcam = ({ studentAssessmentId: initialStudentAssess
     );
   }
 
-  const question = questions[currentQuestion];
+  const question = questions[currentQuestion] || {};
+  const questionText = question.questionText || question.QuestionText || question.question || "Question not available";
+  const options = question.options || question.Options || [];
 
   return (
     <div className="min-h-screen bg-[#F5EFE8] flex">
@@ -153,22 +177,20 @@ export const AssessmentWithWebcam = ({ studentAssessmentId: initialStudentAssess
               <button
                 key={index}
                 onClick={() => setCurrentQuestion(index)}
-                className={`w-full flex items-center justify-between p-3 rounded-lg border-2 transition ${
-                  answers[index] !== undefined
-                    ? "bg-green-500 text-white border-green-500"
-                    : index === currentQuestion
+                className={`w-full flex items-center justify-between p-3 rounded-lg border-2 transition ${answers[index] !== undefined
+                  ? "bg-green-500 text-white border-green-500"
+                  : index === currentQuestion
                     ? "bg-[#2F4156] text-white border-[#2F4156]"
                     : "bg-red-100 text-red-700 border-red-300 hover:bg-red-200"
-                }`}
+                  }`}
               >
                 <span className="font-medium">Q{index + 1}</span>
-                <div className={`w-3 h-3 rounded-full ${
-                  answers[index] !== undefined ? "bg-white" : "bg-red-500"
-                }`}></div>
+                <div className={`w-3 h-3 rounded-full ${answers[index] !== undefined ? "bg-white" : "bg-red-500"
+                  }`}></div>
               </button>
             ))}
           </div>
-          
+
           {/* Timer in Sidebar */}
           <div className="mt-6 p-3 bg-[#F5EFE8] rounded-lg">
             <p className="text-sm font-medium text-[#2F4156]">Time Remaining</p>
@@ -211,23 +233,28 @@ export const AssessmentWithWebcam = ({ studentAssessmentId: initialStudentAssess
           {/* Question Card */}
           <div className="bg-white rounded-lg shadow-md p-8 mb-6">
             <h3 className="text-2xl font-semibold text-[#2F4156] mb-6">
-              {question.questionText || question.question}
+              {questionText}
             </h3>
 
             <div className="space-y-3">
-              {(question.options || []).map((option, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleAnswer(index)}
-                  className={`w-full text-left p-4 rounded-lg border-2 transition ${
-                    answers[currentQuestion] === index
+              {options.length > 0 ? (
+                options.map((option, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handleAnswer(index)}
+                    className={`w-full text-left p-4 rounded-lg border-2 transition ${answers[currentQuestion] === index
                       ? "border-[#2F4156] bg-[#C8D9E6]"
                       : "border-gray-300 hover:border-[#567C8D]"
-                  }`}
-                >
-                  {option}
-                </button>
-              ))}
+                      }`}
+                  >
+                    {option}
+                  </button>
+                ))
+              ) : (
+                <div className="text-center text-red-500 p-4">
+                  No options available for this question
+                </div>
+              )}
             </div>
           </div>
 
