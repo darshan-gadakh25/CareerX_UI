@@ -15,7 +15,9 @@ export const ExploreCareers = () => {
     try {
       setLoading(true);
       const response = await careerAPI.getCareers();
-      setCareers(response.data);
+      // Handle both array response and nested data structure
+      const careersData = Array.isArray(response.data) ? response.data : response.data?.data || [];
+      setCareers(careersData);
     } catch (error) {
       console.error("API unavailable, using fallback data", error);
       // Fallback data when API is unavailable
