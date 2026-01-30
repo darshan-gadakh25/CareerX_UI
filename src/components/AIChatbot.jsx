@@ -24,43 +24,61 @@ export const AIChatbot = () => {
   // Mock AI responses based on keywords
   const getAIResponse = (userMessage) => {
     const message = userMessage.toLowerCase();
-    
+
     if (message.includes('software') || message.includes('programming') || message.includes('coding')) {
       return "Great choice! Software engineering is a high-demand field. To become a software engineer, I recommend: 1) Learn programming languages like Python, Java, or JavaScript 2) Build projects and create a portfolio 3) Practice data structures and algorithms 4) Consider a B.Tech in Computer Science 5) Gain experience through internships. Would you like specific guidance on any of these areas?";
     }
-    
+
     if (message.includes('data science') || message.includes('machine learning') || message.includes('ai')) {
       return "Data Science is an exciting field! Here's your roadmap: 1) Strong foundation in Mathematics and Statistics 2) Learn Python/R programming 3) Master SQL for databases 4) Study machine learning algorithms 5) Work with tools like Pandas, NumPy, Scikit-learn 6) Build projects with real datasets. The average salary ranges from ₹8-20 LPA. Want me to suggest some beginner-friendly projects?";
     }
-    
+
     if (message.includes('doctor') || message.includes('medical') || message.includes('mbbs')) {
       return "Medical career is noble and rewarding! Path to becoming a doctor: 1) Complete 12th with PCB (Physics, Chemistry, Biology) 2) Clear NEET exam 3) Complete MBBS (5.5 years) 4) Choose specialization (3 years) 5) Practice and continuous learning. It requires dedication and patience, but offers job security and social respect. Are you prepared for the long study duration?";
     }
-    
+
     if (message.includes('engineering') || message.includes('btech')) {
       return "Engineering offers diverse opportunities! Popular branches: 1) Computer Science - Software, AI, Data Science 2) Mechanical - Manufacturing, Automotive 3) Electrical - Power, Electronics 4) Civil - Construction, Infrastructure. Consider your interests in Math, Physics, and problem-solving. Average salary: ₹3-15 LPA depending on branch and company. Which engineering field interests you most?";
     }
-    
+
     if (message.includes('business') || message.includes('mba') || message.includes('management')) {
       return "Business and management careers are versatile! Options include: 1) Digital Marketing - Growing field with ₹4-12 LPA 2) Business Analysis - ₹5-15 LPA 3) Consulting - ₹6-20 LPA 4) Entrepreneurship - Unlimited potential. Skills needed: Communication, Leadership, Analytics, Strategic thinking. An MBA can boost your career significantly. What aspect of business interests you?";
     }
-    
+
     if (message.includes('salary') || message.includes('pay') || message.includes('money')) {
       return "Salary varies by field and experience: 1) Software Engineer: ₹6-15 LPA 2) Data Scientist: ₹8-20 LPA 3) Doctor: ₹5-25 LPA 4) Digital Marketer: ₹4-12 LPA 5) Mechanical Engineer: ₹3-10 LPA. Remember, salary grows with experience, skills, and performance. Focus on building valuable skills first, money will follow!";
     }
-    
-    if (message.includes('skill') || message.includes('learn')) {
-      return "Essential skills for 2024: 1) Technical: Programming, Data Analysis, Digital Marketing 2) Soft Skills: Communication, Leadership, Problem-solving 3) Digital Literacy: AI tools, Cloud platforms 4) Adaptability and Continuous Learning. I recommend focusing on both technical and soft skills. Which specific skill would you like to develop?";
+
+    // Process/Steps
+    if (message.includes('process') || message.includes('step') || message.includes('how it works') || message.includes('work')) {
+      return "Here is the CareerX process: 1) **Registration**: Create your profile. 2) **Assessment**: Take our 60-question aptitude and interest test. 3) **Analysis**: Our AI analyzes your results. 4) **Roadmap**: Get a personalized career roadmap. 5) **Skill Development**: Follow the suggested courses and skills to achieve your goal.";
     }
-    
+
+    // Buzzwords & Features
+    if (message.includes('assessment') || message.includes('test') || message.includes('exam')) {
+      return "Our **Aptitude & Interest Assessment** consists of 60 questions designed to evaluate your logical reasoning, technical skills, and career interests. It takes about 60 minutes and requires a webcam for integrity. The results help our AI recommend the best career paths for you.";
+    }
+
+    if (message.includes('roadmap') || message.includes('path') || message.includes('plan')) {
+      return "A **Career Roadmap** is a step-by-step guide generated just for you. It covers: 1) Course selection (after 10th/12th), 2) Graduation paths, 3) Essential skills & certifications, and 4) Job opportunities. It's your personal GPS for career success!";
+    }
+
+    if (message.includes('ai') || message.includes('intellegence') || message.includes('robot')) {
+      return "**AI-Based Career Guidance** uses advanced algorithms to analyze your assessment data against millions of career patterns. It provides unbiased, data-driven recommendations that match your unique profile, ensuring you make informed decisions.";
+    }
+
+    if (message.includes('skill') || message.includes('learn') || message.includes('develop')) {
+      return "**Skill Development & Job Readiness** is key. We don't just tell you 'what' to become, but 'how'. We recommend specific technical skills, soft skills, and online resources to make you job-ready for the current market.";
+    }
+
     if (message.includes('college') || message.includes('course') || message.includes('degree')) {
-      return "Choosing the right course is crucial! Consider: 1) Your interests and strengths 2) Market demand and growth 3) Your career goals 4) College reputation and placement records 5) Course curriculum and practical exposure. Popular courses: B.Tech (Engineering), MBBS (Medical), BBA/B.Com (Business), B.Des (Design). What field interests you most?";
+      return "We provide detailed **Course & College Information**. Whether you're looking for B.Tech, MBBS, or specialized degrees, we help you understand eligibility, future prospects, and top institutions to aim for.";
     }
-    
+
     if (message.includes('confused') || message.includes('help') || message.includes('don\'t know')) {
-      return "It's completely normal to feel confused about career choices! Here's what I suggest: 1) Take our career assessment tests 2) Explore different career options 3) Talk to professionals in fields that interest you 4) Consider your strengths and interests 5) Don't rush - take time to research. I'm here to guide you through this process. What specific area would you like to explore first?";
+      return "It's completely normal to feel confused! CareerX is designed to help. Start by taking our **Assessment** to understand your strengths. Then, explore our **AI-generated Roadmap**. We guide you from confusion to clarity!";
     }
-    
+
     // Default response
     return "That's an interesting question! I'd be happy to help you with career guidance. Could you be more specific about what you'd like to know? I can assist with career paths, skill development, course selection, salary information, or any other career-related queries. Feel free to ask about specific fields like technology, healthcare, business, or engineering!";
   };
@@ -87,7 +105,7 @@ export const AIChatbot = () => {
         sender: "ai",
         timestamp: new Date()
       };
-      
+
       setMessages(prev => [...prev, aiResponse]);
       setIsTyping(false);
     }, 1500);
@@ -102,10 +120,10 @@ export const AIChatbot = () => {
 
   const quickQuestions = [
     "What career is best for me?",
-    "How to become a software engineer?",
-    "What skills should I learn?",
-    "Tell me about data science career",
-    "Engineering vs Medical - which is better?"
+    "How does CareerX work?",
+    "What is the Assessment?",
+    "Tell me about Career Roadmap",
+    "How to become a software engineer?"
   ];
 
   return (
@@ -142,11 +160,10 @@ export const AIChatbot = () => {
                 className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 <div
-                  className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                    message.sender === 'user'
-                      ? 'bg-[#2F4156] text-white'
-                      : 'bg-[#C8D9E6] text-[#2F4156]'
-                  }`}
+                  className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${message.sender === 'user'
+                    ? 'bg-[#2F4156] text-white'
+                    : 'bg-[#C8D9E6] text-[#2F4156]'
+                    }`}
                 >
                   <p className="text-sm">{message.text}</p>
                   <p className="text-xs opacity-70 mt-1">
@@ -155,7 +172,7 @@ export const AIChatbot = () => {
                 </div>
               </div>
             ))}
-            
+
             {isTyping && (
               <div className="flex justify-start">
                 <div className="bg-[#C8D9E6] text-[#2F4156] px-4 py-2 rounded-lg">
