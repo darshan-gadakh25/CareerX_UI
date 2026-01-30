@@ -111,10 +111,12 @@ export const AssessmentWithWebcam = ({ studentAssessmentId: initialStudentAssess
   };
 
   const handleSubmit = async () => {
-    if (answers.length !== questions.length) {
-      if (!confirm("You haven't answered all questions. Submit anyway?")) {
-        return;
-      }
+    // Check if all questions are answered
+    const answeredCount = answers.filter((a) => a !== undefined).length;
+    if (answeredCount < questions.length) {
+      const remaining = questions.length - answeredCount;
+      toast.error(`Please answer all questions. You have ${remaining} remaining.`);
+      return;
     }
 
     try {
