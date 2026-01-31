@@ -3,16 +3,15 @@ import { Link } from "react-router-dom";
 export const StudentDashboard = () => {
   return (
     <div className="bg-[#F5EFE8] min-h-screen">
-
       {/* DASHBOARD CONTENT */}
       <div className="max-w-7xl mx-auto px-4 py-12 grid gap-8 lg:grid-cols-4">
-
         {/* MAIN SECTION */}
         <div className="lg:col-span-3 space-y-10">
-
           {/* Welcome Header */}
-          <div className="bg-gradient-to-r from-[#C8D9E6] to-[#F5EFE8] 
-                          p-8 rounded-2xl shadow-sm">
+          <div
+            className="bg-gradient-to-r from-[#C8D9E6] to-[#F5EFE8] 
+                          p-8 rounded-2xl shadow-sm"
+          >
             <h1 className="text-3xl font-bold text-[#2F4156]">
               Welcome to CareerX 👋
             </h1>
@@ -24,10 +23,11 @@ export const StudentDashboard = () => {
 
           {/* DASHBOARD CARDS */}
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-
             {/* Assessments */}
-            <div className="bg-white p-6 rounded-xl shadow-sm 
-                            hover:-translate-y-1 hover:shadow-lg transition">
+            <div
+              className="bg-white p-6 rounded-xl shadow-sm 
+                            hover:-translate-y-1 hover:shadow-lg transition"
+            >
               <h3 className="text-xl font-semibold text-[#2F4156] mb-2">
                 Career Assessments
               </h3>
@@ -43,8 +43,10 @@ export const StudentDashboard = () => {
             </div>
 
             {/* Explore */}
-            <div className="bg-white p-6 rounded-xl shadow-sm 
-                            hover:-translate-y-1 hover:shadow-lg transition">
+            <div
+              className="bg-white p-6 rounded-xl shadow-sm 
+                            hover:-translate-y-1 hover:shadow-lg transition"
+            >
               <h3 className="text-xl font-semibold text-[#2F4156] mb-2">
                 Explore Careers
               </h3>
@@ -60,8 +62,10 @@ export const StudentDashboard = () => {
             </div>
 
             {/* Roadmap */}
-            <div className="bg-white p-6 rounded-xl shadow-sm 
-                            hover:-translate-y-1 hover:shadow-lg transition">
+            <div
+              className="bg-white p-6 rounded-xl shadow-sm 
+                            hover:-translate-y-1 hover:shadow-lg transition"
+            >
               <h3 className="text-xl font-semibold text-[#2F4156] mb-2">
                 Career Roadmap
               </h3>
@@ -77,8 +81,10 @@ export const StudentDashboard = () => {
             </div>
 
             {/* AI Career Paths */}
-            <div className="bg-white p-6 rounded-xl shadow-sm 
-                            hover:-translate-y-1 hover:shadow-lg transition">
+            <div
+              className="bg-white p-6 rounded-xl shadow-sm 
+                            hover:-translate-y-1 hover:shadow-lg transition"
+            >
               <h3 className="text-xl font-semibold text-[#2F4156] mb-2">
                 AI Career Recommendations
               </h3>
@@ -94,8 +100,10 @@ export const StudentDashboard = () => {
             </div>
 
             {/* Chatbot */}
-            <div className="bg-white p-6 rounded-xl shadow-sm 
-                            hover:-translate-y-1 hover:shadow-lg transition">
+            <div
+              className="bg-white p-6 rounded-xl shadow-sm 
+                            hover:-translate-y-1 hover:shadow-lg transition"
+            >
               <h3 className="text-xl font-semibold text-[#2F4156] mb-2">
                 AI Career Advisor
               </h3>
@@ -111,8 +119,10 @@ export const StudentDashboard = () => {
             </div>
 
             {/* Blogs */}
-            <div className="bg-white p-6 rounded-xl shadow-sm 
-                            hover:-translate-y-1 hover:shadow-lg transition">
+            <div
+              className="bg-white p-6 rounded-xl shadow-sm 
+                            hover:-translate-y-1 hover:shadow-lg transition"
+            >
               <h3 className="text-xl font-semibold text-[#2F4156] mb-2">
                 Career Blogs
               </h3>
@@ -141,26 +151,23 @@ export const StudentDashboard = () => {
         </div>
 
         {/* RIGHT PROFILE PANEL */}
-        <div className="bg-white p-6 rounded-2xl shadow-md 
-                        h-fit sticky top-24">
-
+        <div
+          className="bg-white p-6 rounded-2xl shadow-md 
+                        h-fit sticky top-24"
+        >
           {/* Profile Photo Placeholder */}
           <div className="text-center mb-6">
-            <div className="w-24 h-24 mx-auto rounded-full 
+            <div
+              className="w-24 h-24 mx-auto rounded-full 
                             bg-[#C8D9E6] overflow-hidden 
-                            flex items-center justify-center">
+                            flex items-center justify-center"
+            >
               {/* profile image goes here */}
-              <span className="text-sm text-[#2F4156]">
-                Upload Photo
-              </span>
+              <span className="text-sm text-[#2F4156]">Upload Photo</span>
             </div>
 
-            <h3 className="mt-4 font-semibold text-[#2F4156]">
-              Student Name
-            </h3>
-            <p className="text-sm text-[#2F4156]">
-              Class / Degree
-            </p>
+            <h3 className="mt-4 font-semibold text-[#2F4156]">Student Name</h3>
+            <p className="text-sm text-[#2F4156]">Class / Degree</p>
           </div>
 
           {/* ACTION BUTTONS */}
@@ -173,19 +180,9 @@ export const StudentDashboard = () => {
             >
               Edit Profile
             </Link>
-
-            <button
-              onClick={() => alert('Logout functionality (UI only)')}
-              className="block w-full text-center bg-red-500 
-                         text-white py-2 rounded-lg 
-                         hover:bg-red-600 transition"
-            >
-              Logout
-            </button>
           </div>
         </div>
       </div>
     </div>
   );
 };
-
